@@ -2,32 +2,32 @@ package models
 
 import (
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/chujieyang/commonops/ops/database"
 	"github.com/chujieyang/commonops/ops/forms"
 	"github.com/jinzhu/gorm"
-	"strings"
-	"time"
 )
 
 type OtherRes struct {
 	gorm.Model
-	DataStatus               int8       `json:"DataStatus" gorm:"not null;default:1"`
-	CloudAccountId           int		`json:"CloudAccountId"`
-	ResType                  string     `json:"ResType"`
-	InstanceId               string     `json:"InstanceId"`
-	InstanceName             string     `json:"InstanceName"`
-	Connections              string     `json:"Connections"`
-	Region                   string     `json:"Region"`
-	Engine                   string     `json:"Engine"`
-	Cpu                      string     `json:"Cpu"`
-	Disk                     string     `json:"Disk"`
-	Bandwidth                string     `json:"Bandwidth"`
-	Memory                   string     `json:"Memory"`
-	RenewStatus              int        `json:"RenewStatus" gorm:"not null;default:1"`
-	CreateTime               string     `json:"CreateTime"`
-	ExpiredTime              string     `json:"ExpiredTime"`
+	DataStatus     int8   `json:"DataStatus" gorm:"not null;default:1"`
+	CloudAccountId int    `json:"CloudAccountId"`
+	ResType        string `json:"ResType"`
+	InstanceId     string `json:"InstanceId"`
+	InstanceName   string `json:"InstanceName"`
+	Connections    string `json:"Connections"`
+	Region         string `json:"Region"`
+	Engine         string `json:"Engine"`
+	Cpu            string `json:"Cpu"`
+	Disk           string `json:"Disk"`
+	Bandwidth      string `json:"Bandwidth"`
+	Memory         string `json:"Memory"`
+	RenewStatus    int    `json:"RenewStatus" gorm:"not null;default:1"`
+	CreateTime     string `json:"CreateTime"`
+	ExpiredTime    string `json:"ExpiredTime"`
 }
-
 
 func (OtherRes) TableName() string {
 	return "other_res"
@@ -41,22 +41,19 @@ func GetOtherResCount(userId uint, queryKeyword string, queryResType string,
 	querySql := ""
 	var args []interface{}
 	if isSuperAdminOrOps {
-		querySql = "select count(distinct other_res.id) from other_res where other_res.data_status > 0 " +
-			"and ( expired_time = '' or expired_time >= ? ) "
-		args = append(args, nowTime)
+		querySql = "select count(distinct other_res.id) from other_res where other_res.data_status > 0 "
 	} else {
 		querySql = "select count(distinct other_res.id) from other_res inner join role_resources as rr " +
 			"on other_res.id = rr.resource_id inner join user_roles as ur on rr.role_id = ur.role_id " +
-			"where other_res.data_status > 0 and rr.resource_type = 'other' and ur.user_id = ? " +
-			"and ( expired_time = '' or expired_time >= ? ) "
-		args = append(args, userId, nowTime)
+			"where other_res.data_status > 0 and rr.resource_type = 'other' and ur.user_id = ? "
+		args = append(args, userId)
 	}
 	if queryResType != "所有" {
 		querySql = fmt.Sprintf("%s and other_res.res_type = ? ", querySql)
 		args = append(args, queryResType)
 	}
 	if queryKeyword != "" {
-		querySql = fmt.Sprintf("%s and (instance_name like ? " +
+		querySql = fmt.Sprintf("%s and (instance_name like ? "+
 			"or connections like ? or instance_id like ?) ", querySql)
 		args = append(args, "%"+queryKeyword+"%", "%"+queryKeyword+"%", "%"+queryKeyword+"%")
 	}
@@ -67,6 +64,9 @@ func GetOtherResCount(userId uint, queryKeyword string, queryResType string,
 	if queryExpiredTime != "" {
 		querySql = fmt.Sprintf("%s and ( expired_time = '' or expired_time <= ? ) ", querySql)
 		args = append(args, queryExpiredTime)
+	} else {
+		querySql = fmt.Sprintf("%s and ( expired_time = '' or expired_time >= ? ) ", querySql)
+		args = append(args, nowTime)
 	}
 	if queryManageUser != 0 {
 		querySql = fmt.Sprintf("%s and manage_user = ? ", querySql)
@@ -100,7 +100,7 @@ func GetOtherRes(userId uint, offset int, limit int, queryKeyword string, queryR
 		args = append(args, queryResType)
 	}
 	if queryKeyword != "" {
-		querySql = fmt.Sprintf("%s and (instance_name like ? " +
+		querySql = fmt.Sprintf("%s and (instance_name like ? "+
 			"or connections like ? or instance_id like ?) ", querySql)
 		args = append(args, "%"+queryKeyword+"%", "%"+queryKeyword+"%", "%"+queryKeyword+"%")
 	}
@@ -127,14 +127,14 @@ func AddCloudOtherRes(data forms.AddOtherResForm) (err error) {
 		data.Cost = "0.00"
 	}
 	if data.Id != 0 { // update
-		err = database.MysqlClient.Exec("update other_res set cloud_account_id = ?, res_type = ?, " +
-			"instance_id = ?, instance_name = ?, connections = ?, region = ?, engine = ?, cpu = ?, disk = ?, bandwidth = ?, memory = ?, " +
+		err = database.MysqlClient.Exec("update other_res set cloud_account_id = ?, res_type = ?, "+
+			"instance_id = ?, instance_name = ?, connections = ?, region = ?, engine = ?, cpu = ?, disk = ?, bandwidth = ?, memory = ?, "+
 			"create_time = ?, expired_time = ? where id = ?", data.CloudAccountId, data.ResType,
 			data.InstanceId, data.InstanceName, data.Connections, data.Region, data.Engine, data.Cpu, data.Disk,
 			data.Bandwidth, data.Memory, data.CreateTime, data.ExpiredTime, data.Id).Error
 	} else { // create
-		err = database.MysqlClient.Exec("insert into other_res (data_status, cloud_account_id, res_type, " +
-			"instance_id, instance_name, connections, region, engine, cpu, disk, bandwidth, memory, create_time, " +
+		err = database.MysqlClient.Exec("insert into other_res (data_status, cloud_account_id, res_type, "+
+			"instance_id, instance_name, connections, region, engine, cpu, disk, bandwidth, memory, create_time, "+
 			"expired_time) value (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", 1, data.CloudAccountId, data.ResType,
 			data.InstanceId, data.InstanceName, data.Connections, data.Region, data.Engine, data.Cpu, data.Disk,
 			data.Bandwidth, data.Memory, data.CreateTime, data.ExpiredTime).Error
@@ -143,7 +143,7 @@ func AddCloudOtherRes(data forms.AddOtherResForm) (err error) {
 }
 
 func GetOtherResListByRoleId(roleId int) (otherRes []OtherRes, err error) {
-	err = database.MysqlClient.Raw("SELECT ur.resource_id as id FROM role_resources as ur " +
+	err = database.MysqlClient.Raw("SELECT ur.resource_id as id FROM role_resources as ur "+
 		"WHERE ur.resource_type = 'other' and ur.role_id = ?", roleId).Scan(&otherRes).Error
 	return
 }
@@ -156,14 +156,14 @@ func GetAllOtherResList() (otherRes []OtherRes, err error) {
 
 func AddRoleOtherRes(roleId int64, otherIdList []string) (err error) {
 	resIds := strings.Join(otherIdList, ",")
-	err = database.MysqlClient.Exec("delete from role_resources where role_id = ? " +
+	err = database.MysqlClient.Exec("delete from role_resources where role_id = ? "+
 		"and resource_type='other' and resource_id not in (?)", roleId, resIds).Error
 	for _, resId := range otherIdList {
 		exist := 0
-		database.MysqlClient.Raw("select count(*) from role_resources " +
+		database.MysqlClient.Raw("select count(*) from role_resources "+
 			"where resource_type='other' and role_id = ? and resource_id = ?", roleId, resId).Count(&exist)
 		if exist == 0 {
-			err = database.MysqlClient.Exec("insert into role_resources(role_id, resource_type, " +
+			err = database.MysqlClient.Exec("insert into role_resources(role_id, resource_type, "+
 				"resource_id) values(?, ?, ?)", roleId, "other", resId).Error
 		}
 	}

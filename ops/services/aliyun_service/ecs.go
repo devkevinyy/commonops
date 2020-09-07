@@ -2,13 +2,14 @@ package aliyun_service
 
 import (
 	"fmt"
+	"math"
+
 	"github.com/aliyun/alibaba-cloud-sdk-go/sdk/requests"
 	"github.com/aliyun/alibaba-cloud-sdk-go/services/ecs"
 	"github.com/chujieyang/commonops/ops/conf"
 	"github.com/chujieyang/commonops/ops/database"
 	"github.com/chujieyang/commonops/ops/untils"
 	"go.uber.org/zap"
-	"math"
 )
 
 func EcsDiffCacheClean() (err error) {
@@ -16,7 +17,7 @@ func EcsDiffCacheClean() (err error) {
 	return
 }
 
-func GetEcsList(accessKey string, keySecret string)(data []ecs.Instance){
+func GetEcsList(accessKey string, keySecret string) (data []ecs.Instance) {
 	for _, region := range conf.RegionList {
 		untils.Log.Info("开始获取阿里云ecs数据", zap.String("accesskey", accessKey),
 			zap.String("region", region))
@@ -42,7 +43,7 @@ func GetEcsList(accessKey string, keySecret string)(data []ecs.Instance){
 			totalPage := int(math.Ceil(float64(resp.TotalCount) / float64(resp.PageSize)))
 			untils.Log.Info("数据总页数", zap.Int("msg", totalPage))
 			if totalPage > 1 { // 获取第一页之后的数据
-				for i := 1; i<totalPage; i++ {
+				for i := 1; i < totalPage; i++ {
 					currentPage := i + 1
 					untils.Log.Info("开始获取数据页数", zap.Int("msg", currentPage))
 					request.PageNumber = requests.NewInteger(currentPage)

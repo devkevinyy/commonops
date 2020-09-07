@@ -460,7 +460,7 @@ class OtherContent extends Component{
             "size": this.state.pagination.pageSize,
             "queryKeyword": this.state.queryKeyword,
             "queryResType": this.state.queryResType,
-            "queryExpiredTime": this.state.queryExpiredTime,
+            "queryExpiredTime": this.state.queryExpiredTime===null ? null : this.state.queryExpiredTime.format('YYYY-MM-DD HH:mm:ss'),
             "queryCloudAccount": this.state.queryCloudAccount,
         };
         getCloudOtherRes(queryParams).then((res)=>{

@@ -450,7 +450,7 @@ class KvContent extends Component {
         const queryParams = {
             "page": this.state.pagination.page,
             "size": this.state.pagination.pageSize,
-            "queryExpiredTime": this.state.queryExpiredTime,
+            "queryExpiredTime": this.state.queryExpiredTime===null ? null : this.state.queryExpiredTime.format('YYYY-YY-DD HH:mm:ss'),
             "queryKeyword": this.state.queryKeyword,
             "queryCloudAccount": this.state.queryCloudAccount,
         };
