@@ -94,3 +94,8 @@ const deleteCluster = (data) =>{
     return req.delete('/kubernetes/cluster', data)
 };
 export {deleteCluster}
+
+const getNodeMetrics = (params) =>{
+    return req.get('/kubernetes/metrics/nodes', params)
+};
+export {getNodeMetrics}

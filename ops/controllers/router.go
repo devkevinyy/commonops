@@ -2,6 +2,10 @@ package controllers
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/chujieyang/commonops/ops/conf"
 	"github.com/chujieyang/commonops/ops/controllers/cloud"
 	"github.com/chujieyang/commonops/ops/controllers/daily_job"
@@ -15,9 +19,6 @@ import (
 	"github.com/chujieyang/commonops/ops/untils/k8s_utils"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
-	"time"
 )
 
 func AuthMiddleWare() gin.HandlerFunc {
@@ -27,21 +28,21 @@ func AuthMiddleWare() gin.HandlerFunc {
 			return []byte(conf.SecretSalt), nil
 		})
 		if err != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, untils.RespData{Code:0, Msg:"token失效，请重新登录", Data: nil})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, untils.RespData{Code: 0, Msg: "token失效，请重新登录", Data: nil})
 			untils.Log.Warn("Token is not valid")
 		}
 		if parseToken != nil {
 			var parmMap = parseToken.Claims.(jwt.MapClaims)
 			var expire = (int64)(parmMap["exp"].(float64))
-			var now  = time.Now().Unix()
+			var now = time.Now().Unix()
 			if expire < now {
-				c.AbortWithStatusJSON(http.StatusUnauthorized, untils.RespData{Code:0, Msg:"token失效，请重新登录", Data: nil})
+				c.AbortWithStatusJSON(http.StatusUnauthorized, untils.RespData{Code: 0, Msg: "token失效，请重新登录", Data: nil})
 				untils.Log.Warn("Token 过期")
 			}
 			var userInfo = parmMap["userInfo"].(map[string]interface{})
 			userValid := models.IsUserValid(uint(userInfo["userId"].(float64)))
 			if !userValid {
-				c.AbortWithStatusJSON(http.StatusForbidden, untils.RespData{Code:0, Msg:"用户不存在或被禁用，请联系管理员", Data: nil})
+				c.AbortWithStatusJSON(http.StatusForbidden, untils.RespData{Code: 0, Msg: "用户不存在或被禁用，请联系管理员", Data: nil})
 				untils.Log.Warn("user status is not valid")
 			}
 			if strings.Contains(c.Request.RequestURI, "kubernetes") {
@@ -57,7 +58,7 @@ func AuthMiddleWare() gin.HandlerFunc {
 				c.Set(k, v)
 			}
 		} else {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, untils.RespData{Code:0, Msg:"token失效，请重新登录", Data: nil})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, untils.RespData{Code: 0, Msg: "token失效，请重新登录", Data: nil})
 			untils.Log.Warn("Token is not valid")
 		}
 		c.Next()
@@ -174,37 +175,25 @@ func RegisterRouter(engine *gin.Engine) {
 		k8sRoute.GET("/cluster", k8s.GetK8sCluster)
 		k8sRoute.POST("/cluster", k8s.PostK8sCluster)
 		k8sRoute.DELETE("/cluster", k8s.DeleteK8sCluster)
-
 		k8sRoute.GET("/namespaces", k8s.GetNamespaces)
 		k8sRoute.POST("/namespaces", k8s.PostNamespaces)
 		k8sRoute.DELETE("/namespaces", k8s.DeleteNamespaces)
-
 		k8sRoute.GET("/deployments", k8s.GetDeployments)
-
 		k8sRoute.GET("/replication_controllers", k8s.GetReplicationControllers)
-
 		k8sRoute.GET("/replica_sets", k8s.GetReplicaSets)
-
 		k8sRoute.GET("/pods", k8s.GetPods)
 		k8sRoute.GET("/pod/log", k8s.GetPodLogs)
-
 		k8sRoute.GET("/nodes", k8s.GetNodes)
-
 		k8sRoute.GET("/services", k8s.GetServices)
-
 		k8sRoute.GET("/config_dict", k8s.GetConfigDict)
 		k8sRoute.GET("/secret_dict", k8s.GetSecretDict)
-
 		k8sRoute.POST("/yaml_resource", k8s.CreateResourceByYaml)
-
 		k8sRoute.GET("/yaml", k8s.GetResourceYaml)
 		k8sRoute.PUT("/scale", k8s.PutResourceScale)
-
 		k8sRoute.DELETE("/resource", k8s.DeleteResource)
-
 		k8sRoute.DELETE("/config_map", k8s.DeleteConfigMap)
-
 		k8sRoute.DELETE("/secret", k8s.DeleteSecret)
+		k8sRoute.GET("/metrics/nodes", k8s.GetNodesMetrics)
 	}
 
 }

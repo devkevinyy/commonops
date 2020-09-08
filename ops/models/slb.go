@@ -2,41 +2,41 @@ package models
 
 import (
 	"fmt"
+	"strings"
+
 	"github.com/chujieyang/commonops/ops/database"
 	"github.com/jinzhu/gorm"
-	"strings"
 )
 
 type Slb struct {
 	gorm.Model
-	DataStatus               int8       `json:"DataStatus" gorm:"not null;default: 1"`
-	CloudAccountId           int		`json:"CloudAccountId"`
-	Count                    int        `json:"Count" xml:"Count"`
-	SlaveZoneId              string     `json:"SlaveZoneId" xml:"SlaveZoneId"`
-	LoadBalancerStatus       string     `json:"LoadBalancerStatus" xml:"LoadBalancerStatus"`
-	VSwitchId                string     `json:"VSwitchId" xml:"VSwitchId"`
-	MasterZoneId             string     `json:"MasterZoneId" xml:"MasterZoneId"`
-	PayType                  string     `json:"PayType" xml:"PayType"`
-	RegionIdAlias            string     `json:"RegionIdAlias" xml:"RegionIdAlias"`
-	CreateTime               string     `json:"CreateTime" xml:"CreateTime"`
-	Address                  string     `json:"Address" xml:"Address"`
-	LoadBalancerId           string     `json:"LoadBalancerId" xml:"LoadBalancerId"`
-	AddressIPVersion         string     `json:"AddressIPVersion" xml:"AddressIPVersion"`
-	RegionId                 string     `json:"RegionId" xml:"RegionId"`
-	ResourceGroupId          string     `json:"ResourceGroupId" xml:"ResourceGroupId"`
-	LoadBalancerName         string     `json:"LoadBalancerName" xml:"LoadBalancerName"`
-	InternetChargeType       string     `json:"InternetChargeType" xml:"InternetChargeType"`
-	AddressType              string     `json:"AddressType" xml:"AddressType"`
-	VpcId                    string     `json:"VpcId" xml:"VpcId"`
-	NetworkType              string     `json:"NetworkType" xml:"NetworkType"`
+	DataStatus         int8   `json:"DataStatus" gorm:"not null;default: 1"`
+	CloudAccountId     int    `json:"CloudAccountId"`
+	Count              int    `json:"Count" xml:"Count"`
+	SlaveZoneId        string `json:"SlaveZoneId" xml:"SlaveZoneId"`
+	LoadBalancerStatus string `json:"LoadBalancerStatus" xml:"LoadBalancerStatus"`
+	VSwitchId          string `json:"VSwitchId" xml:"VSwitchId"`
+	MasterZoneId       string `json:"MasterZoneId" xml:"MasterZoneId"`
+	PayType            string `json:"PayType" xml:"PayType"`
+	RegionIdAlias      string `json:"RegionIdAlias" xml:"RegionIdAlias"`
+	CreateTime         string `json:"CreateTime" xml:"CreateTime"`
+	Address            string `json:"Address" xml:"Address"`
+	LoadBalancerId     string `json:"LoadBalancerId" xml:"LoadBalancerId"`
+	AddressIPVersion   string `json:"AddressIPVersion" xml:"AddressIPVersion"`
+	RegionId           string `json:"RegionId" xml:"RegionId"`
+	ResourceGroupId    string `json:"ResourceGroupId" xml:"ResourceGroupId"`
+	LoadBalancerName   string `json:"LoadBalancerName" xml:"LoadBalancerName"`
+	InternetChargeType string `json:"InternetChargeType" xml:"InternetChargeType"`
+	AddressType        string `json:"AddressType" xml:"AddressType"`
+	VpcId              string `json:"VpcId" xml:"VpcId"`
+	NetworkType        string `json:"NetworkType" xml:"NetworkType"`
 }
-
 
 func (Slb) TableName() string {
 	return "slb"
 }
 
-func GetCloudAccountKeyAndSecretBySlbInstanceId(instanceId string) (cloudAccount CloudAccount){
+func GetCloudAccountKeyAndSecretBySlbInstanceId(instanceId string) (cloudAccount CloudAccount) {
 	server := GetSlbDetailByInstanceId(instanceId)
 	database.MysqlClient.Model(&cloudAccount).Where("id=?", server.CloudAccountId).Find(&cloudAccount)
 	return
@@ -87,7 +87,7 @@ func GetSlbByPage(userId uint, offset int, limit int, queryKeyword string, query
 		args = append(args, userId)
 	}
 	if queryKeyword != "" {
-		querySql = fmt.Sprintf("%s and (slb.address like ? " +
+		querySql = fmt.Sprintf("%s and (slb.address like ? "+
 			"or slb.load_balancer_name like ? or load_balancer_id like ? ) ", querySql)
 		args = append(args, "%"+queryKeyword+"%", "%"+queryKeyword+"%", "%"+queryKeyword+"%")
 	}
@@ -117,20 +117,20 @@ func SaveOrUpdateSlb(instanceId string, cloudAccountId int, slb Slb) (err error)
 
 func AddSlbDiffCache(instanceId string) {
 	database.MysqlClient.Create(&DiffCache{
-		Type: "slb",
+		Type:       "slb",
 		InstanceId: instanceId,
 	})
 }
 
 func GetSlbDetail(id int) (slb SlbDetail) {
-	database.MysqlClient.Raw("select slb.*, cloud_account.name as cloud_account_name " +
-		"from slb left join cloud_account " +
+	database.MysqlClient.Raw("select slb.*, cloud_account.name as cloud_account_name "+
+		"from slb left join cloud_account "+
 		"on slb.cloud_account_id = cloud_account.id where slb.id=?", id).Scan(&slb)
 	return
 }
 
 func GetSlbListByRoleId(roleId int) (slb []Slb, err error) {
-	err = database.MysqlClient.Raw("SELECT ur.resource_id as id FROM role_resources as ur " +
+	err = database.MysqlClient.Raw("SELECT ur.resource_id as id FROM role_resources as ur "+
 		"WHERE ur.resource_type = 'slb' and ur.role_id = ?", roleId).Scan(&slb).Error
 	return
 }
@@ -143,14 +143,14 @@ func GetAllSlbList() (slb []Slb, err error) {
 
 func AddRoleSlb(roleId int64, slbIdList []string) (err error) {
 	resIds := strings.Join(slbIdList, ",")
-	err = database.MysqlClient.Exec("delete from role_resources where role_id = ? " +
+	err = database.MysqlClient.Exec("delete from role_resources where role_id = ? "+
 		"and resource_type='slb' and resource_id not in (?)", roleId, resIds).Error
 	for _, resId := range slbIdList {
 		exist := 0
-		database.MysqlClient.Raw("select count(*) from role_resources " +
+		database.MysqlClient.Raw("select count(*) from role_resources "+
 			"where resource_type='slb' and role_id = ? and resource_id = ?", roleId, resId).Count(&exist)
 		if exist == 0 {
-			err = database.MysqlClient.Exec("insert into role_resources(role_id, resource_type, " +
+			err = database.MysqlClient.Exec("insert into role_resources(role_id, resource_type, "+
 				"resource_id) values(?, ?, ?)", roleId, "slb", resId).Error
 		}
 	}

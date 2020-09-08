@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import {Card, Descriptions, Layout, List, Tag, Typography} from "antd";
+import {getNodeMetrics} from "../../api/kubernetes";
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -11,6 +12,16 @@ class NodeDetailContent extends Component {
         this.state = {
             nodeDetail: this.props.location.state,
         };
+    }
+
+    componentDidMount() {
+        this.loadNodeMetrics();
+    }
+
+    loadNodeMetrics() {
+        getNodeMetrics().then((res)=>{
+            console.log(res);
+        })
     }
 
     render() {
