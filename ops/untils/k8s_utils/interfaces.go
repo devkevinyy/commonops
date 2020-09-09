@@ -10,6 +10,7 @@ import (
 
 	k8s_structs "github.com/chujieyang/commonops/ops/forms/k8s"
 	"github.com/chujieyang/commonops/ops/models"
+	"github.com/chujieyang/commonops/ops/prometheus"
 	"github.com/ghodss/yaml"
 	apiAppsV1 "k8s.io/api/apps/v1"
 	apiCoreV1 "k8s.io/api/core/v1"
@@ -23,7 +24,6 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/tools/remotecommand"
-	apiMetricsV1beta1 "k8s.io/metrics/pkg/apis/metrics/v1beta1"
 )
 
 type K8sClientSet struct {
@@ -554,17 +554,8 @@ func (clientSet K8sClientSet) PodsWatcher() {
 // k8s 监控相关
 
 // 获取节点监控 Metricss
-func (clientSet K8sClientSet) GetNodesMetrics() (statusList *apiMetricsV1beta1.NodeMetricsList, err error) {
-	data, err := clientSet.GetK8sAppsV1().RESTClient().Get().AbsPath("/apis/metrics.k8s.io/v1beta1/nodes").DoRaw()
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
-	if err = json.Unmarshal(data, &statusList); err != nil {
-		log.Println(err.Error())
-		return
-	} else {
-		fmt.Println(statusList.Items)
-	}
+func (clientSet K8sClientSet) GetNodesMetrics() (data string, err error) {
+	data, err = prometheus.PrometheusQuery("node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes",
+		1599637710, 1599637857, "10s")
 	return
 }
