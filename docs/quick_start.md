@@ -10,7 +10,7 @@
    项目目录下执行：./build.sh
    
    * 启动容器
-   docker run -d -p 8880:80 -p 19999:9999 yangchujie/ops_system:v1
+   docker run -d -p 8880:80 -p 19999:9999 registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_system:0.3
    
    * web 访问
    http://localhost:8880
