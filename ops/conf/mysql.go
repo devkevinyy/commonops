@@ -1,10 +1,8 @@
 package conf
 
 const (
-	MysqlHost string = "localhost:3306"
-	// MysqlUser string = "mysql"
-	// MysqlPwd string = "ops123456ycj"
+	MysqlHost string = "127.0.0.1:3306"
 	MysqlUser string = "root"
-	MysqlPwd  string = "fulu1234"
+	MysqlPwd  string = ""
 	MysqlDb   string = "common_ops"
 )

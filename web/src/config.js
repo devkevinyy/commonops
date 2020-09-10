@@ -11,7 +11,7 @@ axios.interceptors.response.use(function(config) {
 // const ServerBase = "https://you_host:443/api/";
 // const WSBase = "wss://you_host:443/api/";
 //
-const ServerBase = "http://localhost:9999/";
-const WSBase = "ws://localhost:9999/";
+const ServerBase = "http://localhost:19999/";
+const WSBase = "ws://localhost:19999/";
 
 export { ServerBase, WSBase};

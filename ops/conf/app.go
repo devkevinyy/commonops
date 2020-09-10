@@ -2,7 +2,7 @@ package conf
 
 const (
 	Host       = "localhost"
-	Port       = "9999"
+	Port       = "9992"
 	SecretSalt = "2019Ops06061252Dev_Fulu"
 
 	JenkinsHost     = "http://localhost:18080"

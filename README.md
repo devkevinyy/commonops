@@ -11,7 +11,7 @@
 ```
 启动方式
 
-docker run -d -p 8880:80 -p 19999:9999 yangchujie/ops_system:v1
+docker run -d -p 8880:80 -p 19999:9999 registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_system:0.3
 
 web 访问
 
