@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import OpsBreadcrumbPath from "../breadcrumb_path";
-import {Row, Layout, Button, Modal, List, Card, Empty, Form, Input, Icon, Upload, message, Popconfirm} from "antd";
+import {Row, Layout, Button, Modal, List, Card, Empty, Form, Input, Icon, Upload, message, Popconfirm, Col} from "antd";
 import {ServerBase} from "../../config";
 import {getLocalToken} from "../../utils/axios";
-import {deleteCluster, getClusterData, postCluster, postSwitchCluster} from "../../api/kubernetes";
+import {deleteCluster, getClusterData, postCluster, postSwitchCluster, postPrometheus} from "../../api/kubernetes";
 
 const {Content} = Layout;
 
@@ -16,9 +16,12 @@ class ClusterManageContent extends Component {
         this.addCluster = this.addCluster.bind(this);
         this.handleClusterAddOk = this.handleClusterAddOk.bind(this);
         this.handleClusterAddCancel = this.handleClusterAddCancel.bind(this);
+        this.handleSetPrometheusAddOk = this.handleSetPrometheusAddOk.bind(this);
+        this.handleSetPrometheusAddCancel = this.handleSetPrometheusAddCancel.bind(this);
         this.loadClusterData = this.loadClusterData.bind(this);
         this.state = {
             addModelVisible: false,
+            setPrometheusModelVisible: false,
             uploadProps: {
                 action: ServerBase + 'kubernetes/upload_cluster_kubeconfig',
                 headers: {
@@ -39,6 +42,7 @@ class ClusterManageContent extends Component {
                 },
             },
             clusterData: [],
+            prometheusHost: "",
         }
     }
 
@@ -69,6 +73,10 @@ class ClusterManageContent extends Component {
 
     addCluster() {
         this.setState({addModelVisible: true});
+    }
+
+    setPrometheus() {
+        this.setState({setPrometheusModelVisible: true}); 
     }
 
     handleClusterAddOk() {
@@ -102,6 +110,34 @@ class ClusterManageContent extends Component {
         this.setState({addModelVisible: false});
     }
 
+    handleSetPrometheusAddOk() {
+        if(this.state.prometheusHost.trim()===""){
+            message.warn("prometheus访问地址必须填写");
+        } else {
+            let reqData = {
+                host: "http://"+this.state.prometheusHost.trim(),
+            };
+            postPrometheus(reqData).then((res)=>{
+                if(res.code===0) {
+                    message.success("设置成功");
+                    this.setState({setPrometheusModelVisible: false});
+                } else {
+                    message.error(res.msg);
+                }
+            }).catch((err)=>{
+                message.error(err.toLocaleString());
+            })
+        }
+    }
+
+    handleSetPrometheusAddCancel() {
+        this.setState({setPrometheusModelVisible: false});
+    }
+
+    hostChange(e) {
+        this.setState({prometheusHost: e.target.value});
+    }
+
     confirmDeleteCluster(id) {
         deleteCluster({id: id}).then((res)=>{
             if(res.code===0){
@@ -127,7 +163,12 @@ class ClusterManageContent extends Component {
             >
                 <OpsBreadcrumbPath pathData={["Kubernetes", "集群信息"]} />
                 <Row>
-                    <Button type="primary" onClick={this.addCluster}>新增集群</Button>
+                    <Col span={2}>
+                        <Button type="primary" onClick={this.addCluster} style={{width:"100%"}}>新增集群</Button>
+                    </Col>
+                    <Col span={4} offset={1}>
+                        <Button onClick={this.setPrometheus.bind(this)} style={{width:"100%"}}>设置Prometheus</Button>
+                    </Col>
                 </Row>
 
                 <Row style={{ marginTop: '10px' }}>
@@ -195,6 +236,16 @@ class ClusterManageContent extends Component {
                             )}
                         </Form.Item>
                     </Form>
+                </Modal>
+
+                <Modal
+                    title="设置Prometheus访问地址"
+                    destroyOnClose={true}
+                    visible={this.state.setPrometheusModelVisible}
+                    onOk={this.handleSetPrometheusAddOk}
+                    onCancel={this.handleSetPrometheusAddCancel}
+                >
+                    <Input addonBefore="http://" defaultValue={this.state.prometheusHost} onChange={this.hostChange.bind(this)}/>
                 </Modal>
 
             </Content>

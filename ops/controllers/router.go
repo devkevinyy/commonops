@@ -194,6 +194,7 @@ func RegisterRouter(engine *gin.Engine) {
 		k8sRoute.DELETE("/config_map", k8s.DeleteConfigMap)
 		k8sRoute.DELETE("/secret", k8s.DeleteSecret)
 		k8sRoute.GET("/metrics/nodes", k8s.GetNodesMetrics)
+		k8sRoute.POST("/metrics/prometheus", k8s.PostPrometheus)
 	}
 
 }

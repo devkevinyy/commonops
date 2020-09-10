@@ -99,3 +99,8 @@ const getNodeMetrics = (params) =>{
     return req.get('/kubernetes/metrics/nodes', params)
 };
 export {getNodeMetrics}
+
+const postPrometheus = (data) =>{
+    return req.post('/kubernetes/metrics/prometheus', data)
+};
+export {postPrometheus}

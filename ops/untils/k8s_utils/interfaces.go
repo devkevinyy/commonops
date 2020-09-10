@@ -553,9 +553,8 @@ func (clientSet K8sClientSet) PodsWatcher() {
 
 // k8s 监控相关
 
-// 获取节点监控 Metricss
-func (clientSet K8sClientSet) GetNodesMetrics() (data string, err error) {
-	data, err = prometheus.PrometheusQuery("node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes",
-		1599637710, 1599637857, "10s")
+// 获取 Prometheus 监控 Metricss
+func (clientSet K8sClientSet) GetNodesMetrics(query string, start int, end int, step string) (data string, err error) {
+	data, err = prometheus.PrometheusQuery(query, start, end, step)
 	return
 }

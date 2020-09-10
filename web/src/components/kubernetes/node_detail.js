@@ -8,16 +8,38 @@ const { Content } = Layout;
 const { Text } = Typography;
 const { TabPane } = Tabs;
 
-const Chart = createG2(chart => {
+const MemoryChart = createG2(chart => {
     chart.col('timestamp', {
       alias: '时间',
     });
     chart.col('value', {
-      alias: '内存(G)'
+      alias: '内存使用(M)'
     });
     chart.line().position('timestamp*value').size(2);
     chart.render();
   });
+
+const CpuChart = createG2(chart => {
+    chart.col('timestamp', {
+        alias: '时间',
+    });
+    chart.col('value', {
+        alias: 'CPU(%)'
+    });
+    chart.line().position('timestamp*value').size(2);
+    chart.render();
+});
+
+const DiskChart = createG2(chart => {
+    chart.col('timestamp', {
+        alias: '时间',
+    });
+    chart.col('value', {
+        alias: '磁盘(%)'
+    });
+    chart.line().position('timestamp*value').size(2);
+    chart.render();
+});
 
 class NodeDetailContent extends Component {
 
@@ -25,29 +47,60 @@ class NodeDetailContent extends Component {
         super(props);
         this.state = {
             nodeDetail: this.props.location.state,
-            chartData: [],
+            memoryChartData: [],
         };
     }
 
     tabChange(key) {
         if(key==="Node监控"){
-            getNodeMetrics().then((res)=>{
+            getNodeMetrics({query: "node_memory_MemTotal_bytes-node_memory_MemAvailable_bytes"}).then((res)=>{
                 if(res.code===0){
                     let data = JSON.parse(res.data);
                     let points = data["data"]["result"][0]["values"];
-                    let chartData = [];
+                    let memoryChartData = [];
                     for(let i=0; i<points.length; i++){
-                        chartData.push({
+                        memoryChartData.push({
                             "timestamp": moment(points[i][0]*1000).format("HH:mm:ss"),
-                            "value": parseInt(points[i][1])/1024/1024/1024,
+                            "value": (parseInt(points[i][1])/1024/1024),
                         });
                     }
-                    console.log(chartData);
-                    this.setState({chartData});
+                    this.setState({memoryChartData});
                 } else {
                     message.error(res.msg);
                 }
-            })
+            });
+            getNodeMetrics({query: encodeURIComponent('100 - (avg by (instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)')}).then((res)=>{
+                if(res.code===0){
+                    let data = JSON.parse(res.data);
+                    let points = data["data"]["result"][0]["values"];
+                    let cpuChartData = [];
+                    for(let i=0; i<points.length; i++){
+                        cpuChartData.push({
+                            "timestamp": moment(points[i][0]*1000).format("HH:mm:ss"),
+                            "value": parseFloat(points[i][1]),
+                        });
+                    }
+                    this.setState({cpuChartData});
+                } else {
+                    message.error(res.msg);
+                }
+            });
+            getNodeMetrics({query: encodeURIComponent('100 - (node_filesystem_avail_bytes/node_filesystem_size_bytes * 100)')}).then((res)=>{
+                if(res.code===0){
+                    let data = JSON.parse(res.data);
+                    let points = data["data"]["result"][0]["values"];
+                    let diskChartData = [];
+                    for(let i=0; i<points.length; i++){
+                        diskChartData.push({
+                            "timestamp": moment(points[i][0]*1000).format("HH:mm:ss"),
+                            "value": parseFloat(points[i][1]),
+                        });
+                    }
+                    this.setState({diskChartData});
+                } else {
+                    message.error(res.msg);
+                }
+            });
         }
     }
 
@@ -91,11 +144,18 @@ class NodeDetailContent extends Component {
                         </Descriptions>
                     </TabPane>
                     <TabPane tab="Node监控" key="Node监控">
-                    <Chart
-                        data={this.state.chartData}
-                        width={400}
-                        height={300}
-                        forceFit={true} />
+                        <MemoryChart
+                            data={this.state.memoryChartData}
+                            height={300}
+                            forceFit={true} />
+                        <CpuChart
+                            data={this.state.cpuChartData}
+                            height={300}
+                            forceFit={true} />
+                        <DiskChart
+                            data={this.state.diskChartData}
+                            height={300}
+                            forceFit={true} />
                     </TabPane>
                 </Tabs>
                 {/* <Card size="small" title="镜像列表" style={{ width: '100%' }}>
