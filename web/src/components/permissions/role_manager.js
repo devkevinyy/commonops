@@ -81,8 +81,6 @@ class RoleModal extends Component {
     }
 }
 
-RoleModal = Form.create({ name: 'add_role_modal' })(RoleModal);
-
 class UserManagerModal extends Component {
 
     constructor(props) {
@@ -1012,7 +1010,5 @@ class RolesManager extends Component {
         );
     }
 }
-
-RolesManager = Form.create({ name: 'rolesManager' })(RolesManager);
 
 export default RolesManager;

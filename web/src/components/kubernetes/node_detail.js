@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Card, Descriptions, Layout, List, Tag, Typography, Tabs, message} from "antd";
-import createG2 from 'g2-react';
+// import createG2 from 'g2-react';
 import {getNodeMetrics} from "../../api/kubernetes";
 import moment from 'moment';
 
@@ -8,38 +8,38 @@ const { Content } = Layout;
 const { Text } = Typography;
 const { TabPane } = Tabs;
 
-const MemoryChart = createG2(chart => {
-    chart.col('timestamp', {
-      alias: '时间',
-    });
-    chart.col('value', {
-      alias: '内存使用(M)'
-    });
-    chart.line().position('timestamp*value').size(2);
-    chart.render();
-  });
+// const MemoryChart = createG2(chart => {
+//     chart.col('timestamp', {
+//       alias: '时间',
+//     });
+//     chart.col('value', {
+//       alias: '内存使用(M)'
+//     });
+//     chart.line().position('timestamp*value').size(2);
+//     chart.render();
+//   });
 
-const CpuChart = createG2(chart => {
-    chart.col('timestamp', {
-        alias: '时间',
-    });
-    chart.col('value', {
-        alias: 'CPU(%)'
-    });
-    chart.line().position('timestamp*value').size(2);
-    chart.render();
-});
+// const CpuChart = createG2(chart => {
+//     chart.col('timestamp', {
+//         alias: '时间',
+//     });
+//     chart.col('value', {
+//         alias: 'CPU(%)'
+//     });
+//     chart.line().position('timestamp*value').size(2);
+//     chart.render();
+// });
 
-const DiskChart = createG2(chart => {
-    chart.col('timestamp', {
-        alias: '时间',
-    });
-    chart.col('value', {
-        alias: '磁盘(%)'
-    });
-    chart.line().position('timestamp*value').size(2);
-    chart.render();
-});
+// const DiskChart = createG2(chart => {
+//     chart.col('timestamp', {
+//         alias: '时间',
+//     });
+//     chart.col('value', {
+//         alias: '磁盘(%)'
+//     });
+//     chart.line().position('timestamp*value').size(2);
+//     chart.render();
+// });
 
 class NodeDetailContent extends Component {
 
@@ -144,7 +144,7 @@ class NodeDetailContent extends Component {
                         </Descriptions>
                     </TabPane>
                     <TabPane tab="Node监控" key="Node监控">
-                        <MemoryChart
+                        {/* <MemoryChart
                             data={this.state.memoryChartData}
                             height={300}
                             forceFit={true} />
@@ -155,7 +155,7 @@ class NodeDetailContent extends Component {
                         <DiskChart
                             data={this.state.diskChartData}
                             height={300}
-                            forceFit={true} />
+                            forceFit={true} /> */}
                     </TabPane>
                 </Tabs>
                 {/* <Card size="small" title="镜像列表" style={{ width: '100%' }}>

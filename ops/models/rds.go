@@ -128,7 +128,7 @@ func GetRdsByPage(userId uint, offset int, limit int, queryExpiredTime string, q
 		args = append(args, queryCloudAccount)
 	}
 	querySql += " group by rds.id order by id desc limit ?, ? "
-	args = append(args, nowTime)
+	args = append(args, offset, limit)
 	database.MysqlClient.Raw(querySql, args...).Scan(&rds)
 	return
 }
@@ -219,36 +219,29 @@ func DeleteCloudRds(id int) (err error) {
 }
 
 func UpdateCloudRds(data forms.ExtraInfoForm) (err error) {
-	var updateSql string
-
-	memory := "db_instance_memory"
+	updateSql := "update rds set id=id"
 	if data.RdsBaseInfoForm.DbMemory != "" {
 		memoryInt, err1 := strconv.Atoi(data.RdsBaseInfoForm.DbMemory)
 		if err1 != nil {
 			err = err1
 			return
 		}
-		memory = fmt.Sprintf("%d", memoryInt*1024)
+		updateSql = fmt.Sprintf("%s, db_instance_memory='%d'", updateSql, memoryInt*1024)
 	}
 
-	dbInstanceDescription := "db_instance_description"
 	if data.RdsBaseInfoForm.DbInstanceDescription != "" {
-		dbInstanceDescription = fmt.Sprintf("'%s'", data.RdsBaseInfoForm.DbInstanceDescription)
+		updateSql = fmt.Sprintf("%s, db_instance_description='%s'", updateSql, data.RdsBaseInfoForm.DbInstanceDescription)
 	}
 
-	dbInstanceStorage := "db_instance_storage"
 	if data.RdsBaseInfoForm.DbInstanceStorage != "" {
-		dbInstanceStorage = fmt.Sprintf("'%s'", data.RdsBaseInfoForm.DbInstanceStorage)
+		updateSql = fmt.Sprintf("%s, db_instance_storage='%s'", updateSql, data.RdsBaseInfoForm.DbInstanceStorage)
 	}
 
-	expireTime := "expire_time"
 	if data.RdsBaseInfoForm.DbExpiredTime != "" {
-		expireTime = fmt.Sprintf("'%s'", data.RdsBaseInfoForm.DbExpiredTime)
+		updateSql = fmt.Sprintf("%s, expire_time='%s'", updateSql, data.RdsBaseInfoForm.DbExpiredTime)
 	}
 
-	updateSql = "update rds set db_instance_description=?, db_instance_storage=?, " +
-		"db_instance_memory=?, expire_time=? where id in (?)"
-	err = database.MysqlClient.Exec(updateSql, dbInstanceDescription, dbInstanceStorage,
-		memory, expireTime, strings.Split(data.Id, ",")).Error
+	updateSql = fmt.Sprintf("%s where id in (?)", updateSql)
+	err = database.MysqlClient.Exec(updateSql, strings.Split(data.Id, ",")).Error
 	return
 }

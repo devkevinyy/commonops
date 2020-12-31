@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
-import { Layout, Menu, Icon, message } from 'antd';
+import { Layout, Menu, message } from 'antd';
+import  * as Icons from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import Menus from "../menu";
 import {getUserPermissionsList} from "../api/permission";
@@ -54,6 +55,7 @@ class OpsSider extends Component {
     render() {
         return (
             <Sider
+                trigger={null}
                 collapsed={this.props.menuCollapsed}
                 style={{ textAlign: 'center' }}
             >
@@ -61,16 +63,18 @@ class OpsSider extends Component {
                 <span className="logo-text" style={this.props.menuCollapsed?{display:'none'}:{}}>运维平台</span>
                 <Menu theme="dark"
                     mode="inline"
-                    className="introStep4"
                     style={{ textAlign: 'left' }}
                 >
                   {
                       Menus.sideMenus.map((menu) => {
                           if(menu.subMenus.length && this.hasSubMenusAllowed(menu.subMenus)){
+                              const menuIcon = React.createElement(
+                                Icons[menu.icon]
+                              );
                               return (
                                   <SubMenu
                                       key={menu.menuTitle}
-                                      title={<span><Icon type={menu.icon} /><span>{menu.menuTitle}</span></span>}
+                                      title={<span>{menuIcon}<span>{menu.menuTitle}</span></span>}
                                   >
                                       {
                                           menu.subMenus.map((subMenu) => {

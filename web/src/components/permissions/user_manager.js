@@ -84,8 +84,6 @@ class UserModal extends Component {
     }
 }
 
-UserModal = Form.create({ name: 'UserModal' })(UserModal);
-
 class UserManager extends Component {
 
     constructor(props){
@@ -294,7 +292,5 @@ class UserManager extends Component {
         );
     }
 }
-
-UserManager = Form.create({ name: 'userManager' })(UserManager);
 
 export default UserManager;

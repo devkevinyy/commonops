@@ -227,57 +227,54 @@ func AddCloudServer(data forms.ServerInfoForm) (err error) {
 }
 
 func UpdateCloudServer(data forms.ExtraInfoForm) (err error) {
-	var updateSql string
-
-	memory := "memory"
+	updateSql := "update ecs set id=id"
 	if data.EcsBaseInfoForm.Memory != "" {
 		memoryInt, err1 := strconv.Atoi(data.EcsBaseInfoForm.Memory)
 		if err1 != nil {
 			err = err1
 			return
 		}
-		memory = fmt.Sprintf("%d", memoryInt*1024)
+		memory := fmt.Sprintf("%d", memoryInt*1024)
+		updateSql = fmt.Sprintf("%s, memory='%s'", updateSql, memory)
 	}
 
-	cpu := "cpu"
 	if data.EcsBaseInfoForm.Cpu != "" {
-		cpu = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.Cpu)
+		cpu := fmt.Sprintf("%s", data.EcsBaseInfoForm.Cpu)
+		updateSql = fmt.Sprintf("%s, cpu='%s'", updateSql, cpu)
 	}
 
-	instanceId := "instance_id"
 	if data.EcsBaseInfoForm.InstanceId != "" {
-		instanceId = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.InstanceId)
+		instanceId := fmt.Sprintf("%s", data.EcsBaseInfoForm.InstanceId)
+		updateSql = fmt.Sprintf("%s, instance_id='%s'", updateSql, instanceId)
 	}
 
-	instanceName := "instance_name"
 	if data.EcsBaseInfoForm.InstanceName != "" {
-		instanceName = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.InstanceName)
+		instanceName := fmt.Sprintf("%s", data.EcsBaseInfoForm.InstanceName)
+		updateSql = fmt.Sprintf("%s, instance_name='%s'", updateSql, instanceName)
 	}
 
-	innerIpAddress := "inner_ip_address"
 	if data.EcsBaseInfoForm.InnerIpAddress != "" {
-		innerIpAddress = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.InnerIpAddress)
+		innerIpAddress := fmt.Sprintf("%s", data.EcsBaseInfoForm.InnerIpAddress)
+		updateSql = fmt.Sprintf("%s, inner_ip_address='%s'", updateSql, innerIpAddress)
 	}
 
-	publicIpAddress := "public_ip_address"
 	if data.EcsBaseInfoForm.PublicIpAddress != "" {
-		publicIpAddress = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.PublicIpAddress)
+		publicIpAddress := fmt.Sprintf("%s", data.EcsBaseInfoForm.PublicIpAddress)
+		updateSql = fmt.Sprintf("%s, public_ip_address='%s'", updateSql, publicIpAddress)
 	}
 
-	privateIpAddress := "private_ip_address"
 	if data.EcsBaseInfoForm.PrivateIpAddress != "" {
-		privateIpAddress = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.PrivateIpAddress)
+		privateIpAddress := fmt.Sprintf("%s", data.EcsBaseInfoForm.PrivateIpAddress)
+		updateSql = fmt.Sprintf("%s, private_ip_address='%s'", updateSql, privateIpAddress)
 	}
 
-	expireTime := "expired_time"
 	if data.EcsBaseInfoForm.ExpiredTime != "" {
-		expireTime = fmt.Sprintf("'%s'", data.EcsBaseInfoForm.ExpiredTime)
+		expireTime := fmt.Sprintf("%s", data.EcsBaseInfoForm.ExpiredTime)
+		updateSql = fmt.Sprintf("%s, expired_time='%s'", updateSql, expireTime)
 	}
 
-	updateSql = "update ecs set instance_name=?, cpu=?, memory=?, expired_time=?, " +
-		"instance_id=?, inner_ip_address=?, public_ip_address=?, private_ip_address=? where id in (?)"
-	err = database.MysqlClient.Exec(updateSql, instanceName, cpu, memory, expireTime, instanceId,
-		innerIpAddress, publicIpAddress, privateIpAddress, strings.Split(data.Id, ",")).Error
+	updateSql = fmt.Sprintf("%s where id in (?)", updateSql)
+	err = database.MysqlClient.Debug().Exec(updateSql, strings.Split(data.Id, ",")).Error
 	return
 }
 

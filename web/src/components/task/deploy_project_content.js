@@ -189,8 +189,6 @@ class JobBaseInfo extends Component {
     }
 }
 
-JobBaseInfo = Form.create({ name: 'JobBaseInfoForm' })(JobBaseInfo);
-
 class JobConfigInfo extends Component {
 
     constructor(props){
@@ -285,7 +283,6 @@ class JobConfigInfo extends Component {
         )
     }
 }
-JobConfigInfo = Form.create({ name: 'JobConfigInfoForm' })(JobConfigInfo);
 
 class Deploy_project_content extends Component {
 

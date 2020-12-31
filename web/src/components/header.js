@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import {Layout, Menu, Icon, Modal, Form, Input, Rate, message, Popover, Dropdown} from 'antd';
+import {Layout, Menu, Modal, Form, Input, Rate, message, Popover, Dropdown} from 'antd';
+import {
+    MenuFoldOutlined,
+    MenuUnfoldOutlined,
+    UserOutlined,
+    MessageOutlined
+  } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router-dom';
 import Menus from "../menu";
@@ -16,6 +22,7 @@ class OpsHeader extends Component {
         this.showFeedbackModal = this.showFeedbackModal.bind(this);
         this.handleOk = this.handleOk.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
+        this.formRef = React.createRef();
         this.state= {
             feedbackModalVisible: false,
         }
@@ -26,19 +33,17 @@ class OpsHeader extends Component {
     }
 
     handleOk() {
-        this.props.form.validateFields((err, values) => {
-            if(!err){
-                postUserFeedback(values).then((res)=>{
-                    if(res.code===0) {
-                        this.setState({feedbackModalVisible: false});
-                        message.success("已经收到您的反馈！");
-                    } else {
-                        message.error(res.msg);
-                    }
-                }).catch((err)=>{
-                    message.error(err.toLocaleString());
-                })
-            }
+        this.formRef.current.validateFields().then((values) => {
+            postUserFeedback(values).then((res)=>{
+                if(res.code===0) {
+                    this.setState({feedbackModalVisible: false});
+                    message.success("已经收到您的反馈！");
+                } else {
+                    message.error(res.msg);
+                }
+            }).catch((err)=>{
+                message.error(err.toLocaleString());
+            })
         });
     }
 
@@ -47,7 +52,6 @@ class OpsHeader extends Component {
     }
 
     render() {
-        const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
             labelCol: {span: 5},
             wrapperCol: {span: 17},
@@ -74,24 +78,20 @@ class OpsHeader extends Component {
             <Header style={{ background: '#fff', padding: 0 }}>
                 <div style={{ background: '#001529' }}>
                     <span style={{color:'#fff', paddingLeft:'2%', fontSize:'1.4em'}}>
-                        <Icon
-                            className="trigger"
-                            type={this.props.menuCollapsed ? 'menu-unfold' : 'menu-fold'}
-                            onClick={this.props.handleSiderMenu}
-                            style={{cursor: 'pointer'}}
-                        />
+                        {
+                            this.props.menuCollapsed ? <MenuUnfoldOutlined className="trigger" onClick={this.props.handleSiderMenu} style={{cursor: 'pointer'}}/> : <MenuFoldOutlined className="trigger" onClick={this.props.handleSiderMenu} style={{cursor: 'pointer'}}/>
+                        }
                     </span>
 
-                    <span className="introStep1" style={{color:'#fff', fontSize:'1.4em', float: 'right', cursor: 'pointer', width: '30px', textAlign: 'center', marginLeft: '20px', marginRight: '30px'}}>
+                    <span style={{color:'#fff', fontSize:'1.4em', float: 'right', cursor: 'pointer', width: '30px', textAlign: 'center', marginLeft: '20px', marginRight: '30px'}}>
                         <Dropdown overlay={menuContent} overlayStyle={{ width: '150px' }}>
-                            <Icon type="user" />
+                            <UserOutlined />
                         </Dropdown>
                     </span>
 
-                    <span className="introStep2" style={{color:'#fff', fontSize:'1.4em', float: 'right', cursor: 'pointer', width: '30px', textAlign: 'center',}} onClick={this.showFeedbackModal}>
+                    <span style={{color:'#fff', fontSize:'1.4em', float: 'right', cursor: 'pointer', width: '30px', textAlign: 'center',}} onClick={this.showFeedbackModal}>
                         <Popover content="提交需求反馈">
-                            <Icon type="message">
-                            </Icon>
+                            <MessageOutlined />
                         </Popover>
                     </span>
 
@@ -103,38 +103,29 @@ class OpsHeader extends Component {
                         onCancel={this.handleCancel}
                         width={700}
                     >
-                        <Form {...formItemLayout}>
-                            <Form.Item label="反馈内容">
-                            {getFieldDecorator('advice', {
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '内容不能为空',
-                                    },
-                                ],
-                            })(<TextArea rows={4} />)}
+                        <Form {...formItemLayout} ref={this.formRef}>
+                            <Form.Item label="反馈内容" name="advice" rules={[
+                                {
+                                    required: true,
+                                    message: '内容不能为空',
+                                }
+                            ]}>
+                                <TextArea rows={4} />
                             </Form.Item>
-                        </Form>
-                        <Form {...formItemLayout}>
-                            <Form.Item label="当前版本满意度">
-                                {getFieldDecorator('score', {
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '请对当前版本进行打分',
-                                        },
-                                    ],
-                                })(<Rate tooltips={['难用', '不好用', '体验一般', '体验良好', '非常棒']} />)}
+                            <Form.Item label="当前版本满意度" name="score" rules={[
+                                {
+                                    required: true,
+                                    message: '请对当前版本进行打分',
+                                }
+                            ]}>
+                                <Rate tooltips={['难用', '不好用', '体验一般', '体验良好', '非常棒']} />
                             </Form.Item>
                         </Form>
                     </Modal>
-
                 </div>
             </Header>
         );
     }
 }
-
-OpsHeader = Form.create({ name: 'OpsHeader' })(OpsHeader);
 
 export default withRouter(OpsHeader);

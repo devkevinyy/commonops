@@ -117,6 +117,7 @@ class ExtraInfoModal extends Component {
         this.handleOk = this.handleOk.bind(this);
         this.handleCancel = this.handleCancel.bind(this);
         this.switchChange = this.switchChange.bind(this);
+        this.formRef = React.createRef();
         this.state = {
             usersData: [],
         }
@@ -131,25 +132,22 @@ class ExtraInfoModal extends Component {
     }
 
     handleOk() {
-        this.props.form.validateFields((err, values) => {
-            if(!err){
-                if('expiredTime' in values){
-                    values.expiredTime = moment(values.expiredTime).format("YYYY-MM-DD 00:00:00");
-                }
-                if('dbExpiredTime' in values){
-                    values.dbExpiredTime = moment(values.dbExpiredTime).format("YYYY-MM-DD 00:00:00");
-                }
-                if('kvExpiredTime' in values){
-                    values.kvExpiredTime = moment(values.kvExpiredTime).format("YYYY-MM-DD 00:00:00");
-                }
-
-                this.props.handleOk(values);
+        this.formRef.current.validateFields().then((values) => {
+            if('expiredTime' in values){
+                values.expiredTime = moment(values.expiredTime).format("YYYY-MM-DD 00:00:00");
             }
+            if('dbExpiredTime' in values){
+                values.dbExpiredTime = moment(values.dbExpiredTime).format("YYYY-MM-DD 00:00:00");
+            }
+            if('kvExpiredTime' in values){
+                values.kvExpiredTime = moment(values.kvExpiredTime).format("YYYY-MM-DD 00:00:00");
+            }
+            this.props.handleOk(values);
         });
     }
 
     handleCancel() {
-        this.props.form.resetFields();
+        this.formRef.current.resetFields();
         this.props.handleCancel();
     }
 
@@ -176,7 +174,6 @@ class ExtraInfoModal extends Component {
         let resType = this.props.resType;
         let formContent;
         let result = [];
-        const {getFieldDecorator} = this.props.form;
         const twoItemFormLayout = {
             labelCol: {span: 7},
             wrapperCol: {span: 17},
@@ -199,12 +196,10 @@ class ExtraInfoModal extends Component {
             let offsetNum = index % 2 === 0 ? 0 : 1;
             return (
                 <Col span={11} offset={offsetNum} key={item.key}>
-                    <Form.Item {...twoItemFormLayout} label={item.label}>
-                        {getFieldDecorator(item.key, {
-                            rules: [{required: item.required, message: '该值为必填项！'}],
-                        })(
-                            this.getInputItem(item, disableInput)
-                        )}
+                    <Form.Item {...twoItemFormLayout} label={item.label} name={item.key} rules={[
+                        {required: item.required, message: '该值为必填项！'}
+                    ]}>
+                        {this.getInputItem(item, disableInput)}
                     </Form.Item>
                 </Col>
             )
@@ -218,7 +213,6 @@ class ExtraInfoModal extends Component {
         );
         return formContent;
     }
-
 
     render() {
         const formItemLayout = {
@@ -235,7 +229,7 @@ class ExtraInfoModal extends Component {
                 centered={true}
                 width={700}
             >
-                <Form {...formItemLayout}>
+                <Form ref={this.formRef} {...formItemLayout} initialValues={this.props.editData}>
                     {this.generateBaseInfoForm()}
                 </Form>
             </Modal>
@@ -243,7 +237,5 @@ class ExtraInfoModal extends Component {
     }
 
 }
-
-ExtraInfoModal = Form.create({ name: 'ExtraInfoModal' })(ExtraInfoModal);
 
 export default ExtraInfoModal;

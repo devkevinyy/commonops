@@ -21,7 +21,8 @@ import {
     deleteCloudSlb,
     getCloudAccouts,
 } from "../../api/cloud";
-import echarts from "echarts/lib/echarts";
+import LineChart from "./common/line_chart";
+import { SearchOutlined } from "@ant-design/icons";
 import moment from "moment";
 
 const { Text, Paragraph } = Typography;
@@ -33,13 +34,12 @@ class SlbContent extends Component {
 
     constructor(props) {
         super(props);
-        this.onShowSizeChange = this.onShowSizeChange.bind(this);
         this.changePage = this.changePage.bind(this);
         let operWidth = this.props.isSuperAdmin ? 200 : 100;
         this.state = {
             columns: [
                 {
-                    title: 'Id', dataIndex: 'ID', key: 'ID', className: 'small_font',
+                    title: 'Id', dataIndex: 'ID', key: 'ID',
                     render: value => {
                         return (
                             <Text ellipsis={true}>{value}</Text>
@@ -47,7 +47,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '实例id', dataIndex: 'LoadBalancerId', key: 'LoadBalancerId', className: 'small_font',
+                    title: '实例id', dataIndex: 'LoadBalancerId', key: 'LoadBalancerId',
                     render: value => {
                         return (
                             <Text ellipsis={true}>{value}</Text>
@@ -55,7 +55,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '实例名称', dataIndex: 'LoadBalancerName', key: 'LoadBalancerName', className: 'small_font', width: 200,
+                    title: '实例名称', dataIndex: 'LoadBalancerName', key: 'LoadBalancerName',
                     render: (value, record) => {
                         return (
                             <Tooltip title={value}>
@@ -65,7 +65,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '云账号', dataIndex: 'CloudAccountName', key: 'CloudAccountName', className: 'small_font',
+                    title: '云账号', dataIndex: 'CloudAccountName', key: 'CloudAccountName', 
                     render: value => {
                         return (
                             <Text ellipsis={true}>{value}</Text>
@@ -73,7 +73,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '服务地址', dataIndex: 'Address', key: 'Address', className: 'small_font',
+                    title: '服务地址', dataIndex: 'Address', key: 'Address', width: 200,
                     render: value => {
                         return (
                             <Paragraph style={{marginBottom: 0}} copyable>{value}</Paragraph>
@@ -81,7 +81,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '计费方式', dataIndex: 'InternetChargeType', key: 'InternetChargeType', className: 'small_font',
+                    title: '计费方式', dataIndex: 'InternetChargeType', key: 'InternetChargeType',
                     render: value => {
                         if(value==="4"){
                             value = "按流量计费"
@@ -94,7 +94,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '创建时间', dataIndex: 'CreateTime', key: 'CreateTime', className: 'small_font',
+                    title: '创建时间', dataIndex: 'CreateTime', key: 'CreateTime',
                     render: value => {
                         return (
                             <Text ellipsis={true}>{value}</Text>
@@ -102,7 +102,7 @@ class SlbContent extends Component {
                     }
                 },
                 {
-                    title: '实例状态', dataIndex: 'LoadBalancerStatus', key: 'LoadBalancerStatus', align: "center", className: 'small_font',
+                    title: '实例状态', dataIndex: 'LoadBalancerStatus', key: 'LoadBalancerStatus', align: "center",
                     render: value => {
                         if(value==="active") {
                             return <Badge status="processing" />;
@@ -115,9 +115,8 @@ class SlbContent extends Component {
                     title: '操作',
                     key: 'operation',
                     fixed: 'right',
-                    width: {operWidth},
                     align: 'center',
-                    className: 'small_font',
+                    width: {operWidth},
                     render: (text, record) => {
                         return (
                             <div>
@@ -138,18 +137,17 @@ class SlbContent extends Component {
             ],
             tableLoading: false,
             tableData: [],
-            chartXData: [],
-            chartYData: [],
+            chartData: [],
             pagination: {
                 showSizeChanger: true,
                 pageSizeOptions: ['10', '20', '30', '100'],
-                onShowSizeChange: this.onShowSizeChange,
+                onShowSizeChange: (current, size) => this.onShowSizeChange(current, size),
                 showQuickJumper: false,
                 showTotal: (total) => `共 ${total} 条`,
                 pageSize: 10,
                 page: 1,
                 total: 0,
-                onChange: (current) => this.changePage(current),
+                onChange: (page, pageSize) => this.changePage(page, pageSize),
             },
             extraInfoModalVisible: false,
             drawerVisible: false,
@@ -171,17 +169,21 @@ class SlbContent extends Component {
         }
     }
 
-    onShowSizeChange(current, size){
-        this.setState({
-            pagination: {
-                ...this.state.pagination,
-                page: 1,
-                current: 1,
-                pageSize: size,
-            }
-        }, ()=>{
+    onShowSizeChange(current, size) {
+        let pagination = {
+          ...this.state.pagination,
+          page: 1,
+          current: 1,
+          pageSize: size,
+        };
+        this.setState(
+          {
+            pagination: pagination,
+          },
+          () => {
             this.refreshTableData();
-        });
+          }
+        );
     }
 
     componentDidMount() {
@@ -253,62 +255,6 @@ class SlbContent extends Component {
         });
     };
 
-    showChart = () => {
-        let myChart = echarts.init(document.getElementById('ecsMonitorChart'));
-        let option = {
-            tooltip : {
-                trigger: 'axis',
-                axisPointer: {
-                    label: {
-                        backgroundColor: '#623485'
-                    }
-                }
-            },
-            xAxis : [
-                {
-                    type : 'category',
-                    boundaryGap : false,
-                    data : this.state.chartXData
-                }
-            ],
-            yAxis : [
-                {
-                    type : 'value',
-                    axisLabel:{
-                        margin: 7,
-                        formatter: '{value} '+ this.state.chartFormat,
-                        textStyle:{
-                            color: '#999',
-                            fontSize: '12px'
-                        },
-                    },
-                }
-            ],
-            series : [
-                {
-                    type:'line',
-                    itemStyle : {
-                        normal : {
-                            color:'rgba(43, 182, 243, 0.65)',
-                            lineStyle: {
-                                color: "rgba(43, 182, 243, 0.65)",
-                                shadowColor: "rgba(43, 182, 243, 0.65)",
-                                shadowBlur: 10,
-                            },
-                            areaStyle: {
-                                color: "rgba(43, 182, 243, 0.65)",
-                                shadowColor: "rgba(43, 182, 243, 0.65)",
-                                shadowBlur: 10,
-                            },
-                        }
-                    },
-                    data: this.state.chartYData
-                }
-            ]
-        };
-        myChart.setOption(option);
-    };
-
     openMonitorDrawer = (data) => {
         this.setState({ drawerVisible: true, instanceId: data.LoadBalancerId, currentServerDetail: data }, ()=>{
             this.refreshMonitorData(data.LoadBalancerId, this.state.timeTagValue, this.state.metricTagValue);
@@ -330,16 +276,14 @@ class SlbContent extends Component {
                 return;
             }
             let dataPoints = JSON.parse(res['data']['Datapoints']);
-            let chartXData = [];
-            let chartYData = [];
+            let chartData = [];
             for(let i=0; i<dataPoints.length; i++){
-                chartXData.push(moment(dataPoints[i]['timestamp']).format("DD日HH:mm"));
-                chartYData.push(dataPoints[i]['Average']);
+                chartData.push({
+                    "date": moment(dataPoints[i]["timestamp"]).format("DD日HH:mm"),
+                    "value": dataPoints[i]["Average"],
+                });
             }
-            this.setState({chartXData: chartXData, chartYData: chartYData}, ()=>{
-                this.setState({chartLoading: false});
-                this.showChart();
-            });
+            this.setState({chartLoading: false, chartData: chartData});
         }).catch((err)=>{
             console.log(err)
         });
@@ -360,16 +304,20 @@ class SlbContent extends Component {
         });
     };
 
-    changePage = (e) => {
-        this.setState({
+    changePage = (page, pageSize) => {
+        this.setState(
+          {
             pagination: {
-                ...this.state.pagination,
-                page: e,
-                current: e
-            }
-        }, ()=>{
+              ...this.state.pagination,
+              page: page,
+              current: page,
+              pageSize: pageSize,
+            },
+          },
+          () => {
             this.refreshTableData();
-        });
+          }
+        );
     };
 
     slbDelete(data) {
@@ -448,11 +396,6 @@ class SlbContent extends Component {
                 <Option key={item.id} value={item.id}>{item.accountName}</Option>
             );
         });
-        const { selectedRowKeys } = this.state;
-        const rowSelection = {
-            selectedRowKeys,
-            onChange: this.onSelectChange,
-        };
         return (
           <Content style={{
               background: '#fff', padding: "5px 20px", margin: 0, height: "100%",
@@ -469,7 +412,7 @@ class SlbContent extends Component {
                       </Select>
                   </Col>
                   <Col span={2} className="col-span">
-                      <Button style={{ width: "100%" }} type="primary" icon="search" onClick={this.handleQuery}>查 询</Button>
+                      <Button style={{ width: "100%" }} type="primary" icon={<SearchOutlined />} onClick={this.handleQuery}>查 询</Button>
                   </Col>
               </Row>
 
@@ -511,11 +454,10 @@ class SlbContent extends Component {
                                           </Radio.Group>
                                       </Col>
                                   </Row>
-                                  <Row>
-                                      <Col>
-                                          <div id="ecsMonitorChart" style={{height:500}}>
-                                          </div>
-                                      </Col>
+                                  <Row style={{marginTop: 20}}>
+                                    <Col>
+                                        <LineChart width="800" height="500" data={this.state.chartData}/>
+                                    </Col>
                                   </Row>
                               </Spin>
                           </TabPane>
@@ -541,10 +483,8 @@ class SlbContent extends Component {
                       scroll={{ x: 'max-content' }}
                       pagination={this.state.pagination}
                       loading={this.state.tableLoading}
-                      rowClassName="fixedHeight"
                       bordered
                       size="small"
-                      rowSelection={rowSelection}
                   />
               </div>
           </Content>

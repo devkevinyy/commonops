@@ -253,6 +253,4 @@ class ClusterManageContent extends Component {
     }
 }
 
-ClusterManageContent = Form.create({ name: 'ClusterManageContent' })(ClusterManageContent);
-
 export default ClusterManageContent;

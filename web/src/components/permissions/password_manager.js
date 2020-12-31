@@ -88,6 +88,4 @@ class PasswordManager extends Component {
     
 }
 
-PasswordManager = Form.create({ name: 'passwordManagerForm' })(PasswordManager);
-
 export default PasswordManager;

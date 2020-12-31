@@ -12,7 +12,7 @@ import {
     Col,
     Tabs
 } from "antd";
-import createG2 from 'g2-react';
+// import createG2 from 'g2-react';
 import {getNodeMetrics} from "../../api/kubernetes";
 import {K8sContainerIconSvg} from "../../assets/Icons";
 import moment from 'moment';
@@ -21,27 +21,27 @@ const { Text } = Typography;
 const { Content } = Layout;
 const { TabPane } = Tabs;
 
-const MemoryChart = createG2(chart => {
-    chart.col('timestamp', {
-      alias: '时间',
-    });
-    chart.col('value', {
-      alias: '内存(M)'
-    });
-    chart.line().position('timestamp*value').size(2);
-    chart.render();
-});
+// const MemoryChart = createG2(chart => {
+//     chart.col('timestamp', {
+//       alias: '时间',
+//     });
+//     chart.col('value', {
+//       alias: '内存(M)'
+//     });
+//     chart.line().position('timestamp*value').size(2);
+//     chart.render();
+// });
 
-const CpuChart = createG2(chart => {
-    chart.col('timestamp', {
-      alias: '时间',
-    });
-    chart.col('value', {
-      alias: 'CPU(%)'
-    });
-    chart.line().position('timestamp*value').size(2);
-    chart.render();
-});
+// const CpuChart = createG2(chart => {
+//     chart.col('timestamp', {
+//       alias: '时间',
+//     });
+//     chart.col('value', {
+//       alias: 'CPU(%)'
+//     });
+//     chart.line().position('timestamp*value').size(2);
+//     chart.render();
+// });
 
 class PodDetailContent extends Component {
 
@@ -185,14 +185,14 @@ class PodDetailContent extends Component {
                         </Card>
                     </TabPane>
                     <TabPane tab="Pod监控" key="Pod监控">
-                        <MemoryChart
+                        {/* <MemoryChart
                             data={this.state.memoryChartData}
                             height={300}
                             forceFit={true} />
                         <CpuChart
                             data={this.state.cpuChartData}
                             height={300}
-                            forceFit={true} />
+                            forceFit={true} /> */}
                     </TabPane>
                 </Tabs>
                 

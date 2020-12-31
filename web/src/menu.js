@@ -1,4 +1,3 @@
-
 const topMenus = [
     {
         "menuTitle": "我的",
@@ -13,7 +12,7 @@ const topMenus = [
 const sideMenus = [
     {
         "menuTitle": "云资源",
-        "icon": "cloud-server",
+        "icon": "CloudServerOutlined",
         "subMenus": [
             {"title": "服务器", "route": "/admin/cloud_resource/cloud_server"},
             {"title": "数据库", "route": "/admin/cloud_resource/cloud_rds"},
@@ -25,7 +24,7 @@ const sideMenus = [
     },
     {
         "menuTitle": "工作协助",
-        "icon": "team",
+        "icon": "TeamOutlined",
         "subMenus": [
             {"title": "提交工单", "route": "/admin/task/deploy_project"},
             {"title": "工单列表", "route": "/admin/task/jobs"},
@@ -33,28 +32,28 @@ const sideMenus = [
     },
     {
         "menuTitle": "CI & CD",
-        "icon": "gitlab",
+        "icon": "GitlabOutlined",
         "subMenus": [
             // {"title": "任务列表", "route": "/admin/cicd/jobs"},
         ],
     },
     {
         "menuTitle": "Kubernetes",
-        "icon": "ant-cloud",
+        "icon": "ClusterOutlined",
         "subMenus": [
             {"title": "集群管理", "route": "/admin/k8s_cluster/info"},
         ],
     },
     {
         "menuTitle": "数据管理",
-        "icon": "database",
+        "icon": "DatabaseOutlined",
         "subMenus": [
             {"title": "阿里云", "route": "/admin/data/syncAliyun"},
         ],
     },
     {
         "menuTitle": "权限管理",
-        "icon": "eye",
+        "icon": "KeyOutlined",
         "subMenus": [
             {"title": "用户管理", "route": "/admin/permission/users"},
             {"title": "角色管理", "route": "/admin/permission/roles"},
@@ -63,7 +62,7 @@ const sideMenus = [
     },
     {
         "menuTitle": "系统管理",
-        "icon": "radius-setting",
+        "icon": "GroupOutlined",
         "subMenus": [
             {"title": "用户反馈", "route": "/admin/system/user_feedback"},
         ],

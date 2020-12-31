@@ -52,14 +52,6 @@
     background-size: 20%;
 }
 
-.small_font {
-    height: 45px;
-    max-height: 45px;
-    padding-top: 3px !important;
-    padding-bottom: 3px !important;
-    font-size: 13px;
-}
-
 .fixedHeight {
     height: 45px !important;
     max-height: 45px;
@@ -114,4 +106,13 @@
     padding: 10px;
     border-left: 6px solid #ccc !important;
     border-color: #2196F3 !important;
+}
+
+.wechat {
+    height: 60px;
+    width: 60px;
+    background: url('../img/wechat.jpeg') no-repeat center center;
+    background-size: 100%;
+    border-radius: 3px;
+    display: inline-block;
 }

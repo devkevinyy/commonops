@@ -219,35 +219,29 @@ func DeleteCloudKv(id int) (err error) {
 }
 
 func UpdateCloudKv(data forms.ExtraInfoForm) (err error) {
-	var updateSql string
-
-	capacity := "capacity"
+	updateSql := "update kv set id=id"
 	if data.KvBaseInfoForm.KvCapacity != "" {
 		memoryInt, err1 := strconv.Atoi(data.KvBaseInfoForm.KvCapacity)
 		if err1 != nil {
 			err = err1
 			return
 		}
-		capacity = fmt.Sprintf("%d", memoryInt*1024)
+		updateSql = fmt.Sprintf("%s, capacity='%d'", updateSql, memoryInt*1024)
 	}
 
-	instanceName := "instance_name"
 	if data.KvBaseInfoForm.KvInstanceName != "" {
-		instanceName = fmt.Sprintf("'%s'", data.KvBaseInfoForm.KvInstanceName)
+		updateSql = fmt.Sprintf("%s, instance_name='%s'", updateSql, data.KvBaseInfoForm.KvInstanceName)
 	}
 
-	bandwidth := "bandwidth"
 	if data.KvBaseInfoForm.KvBandwidth != "" {
-		bandwidth = fmt.Sprintf("'%s'", data.KvBaseInfoForm.KvBandwidth)
+		updateSql = fmt.Sprintf("%s, bandwidth='%s'", updateSql, data.KvBaseInfoForm.KvBandwidth)
 	}
 
-	endTime := "end_time"
 	if data.KvBaseInfoForm.KvExpiredTime != "" {
-		endTime = fmt.Sprintf("'%s'", data.KvBaseInfoForm.KvExpiredTime)
+		updateSql = fmt.Sprintf("%s, end_time='%s'", updateSql, data.KvBaseInfoForm.KvExpiredTime)
 	}
 
-	updateSql = "update kv set instance_name=?, bandwidth=?, capacity=?, end_time=? where id in (?)"
-	err = database.MysqlClient.Exec(updateSql, instanceName, bandwidth, capacity,
-		endTime, strings.Split(data.Id, ",")).Error
+	updateSql = fmt.Sprintf("%s where id in (?)", updateSql)
+	err = database.MysqlClient.Exec(updateSql, strings.Split(data.Id, ",")).Error
 	return
 }

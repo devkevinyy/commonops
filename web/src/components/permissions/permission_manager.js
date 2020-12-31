@@ -92,8 +92,6 @@ class AuthLinkModal extends Component {
     }
 }
 
-AuthLinkModal = Form.create({ name: 'add_auth_link' })(AuthLinkModal);
-
 class PermissionsManager extends Component {
 
     constructor(props){
@@ -264,7 +262,5 @@ class PermissionsManager extends Component {
         );
     }
 }
-
-PermissionsManager = Form.create({ name: 'permissionsManager' })(PermissionsManager);
 
 export default PermissionsManager;

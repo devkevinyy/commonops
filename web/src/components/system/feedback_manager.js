@@ -130,6 +130,4 @@ class UserFeedbackManager extends Component {
     }
 }
 
-UserFeedbackManager = Form.create({ name: 'UserFeedbackManager' })(UserFeedbackManager);
-
 export default UserFeedbackManager;

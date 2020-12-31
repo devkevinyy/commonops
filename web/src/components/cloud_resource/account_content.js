@@ -338,6 +338,4 @@ class CloudContent extends Component {
     }
 }
 
-CloudContent = Form.create({ name: 'cloudAccount' })(CloudContent);
-
 export default CloudContent;
