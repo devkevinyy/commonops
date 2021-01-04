@@ -3,42 +3,44 @@ package models
 import (
 	"errors"
 	"fmt"
+	"strings"
+
 	"github.com/chujieyang/commonops/ops/database"
 	"github.com/chujieyang/commonops/ops/forms"
 	"github.com/chujieyang/commonops/ops/untils"
-	"strings"
 )
 
 type DailyJob struct {
-	Id int           `json:"id" gorm:"column:id;PRIMARY_KEY"`
-	JobName string 		`json:"job_name" gorm:"column:job_name;type:varchar(512)"`
-	JobType string 		`json:"job_type" gorm:"column:job_type"`
-	ImportantDegree string 		`json:"important_degree" gorm:"column:important_degree"`
-	OpenDeployAutoConfig string  `json:"open_deploy_auto_config" gorm:"column:open_deploy_auto_config;type:text"`
-	TaskContent string  `json:"task_content" gorm:"column:task_content;type:text"`
-	Remark string 		`json:"remark" gorm:"column:remark;type:text"`
-	CreatorUserId int `json:"creator_user_id" gorm:"column:creator_user_id;type:int"`
-	CreatorUserName string `json:"creator_user_name" gorm:"column:creator_user_name"`
-	ExecutorUserId int `json:"executor_user_id" gorm:"column:executor_user_id;type:int"`
-	ExecutorUserName string `json:"executor_user_name" gorm:"column:executor_user_name"`
-	Status int8  `json:"status" gorm:"column:status"`
-	CreateTime untils.JSONTime `json:"create_time" gorm:"column:create_time"`
-	AcceptTime untils.JSONTime `json:"accept_time" gorm:"column:accept_time;default:null"`
-	EndTime untils.JSONTime `json:"end_time" gorm:"column:end_time;default:null"`
+	Id                   int             `json:"id" gorm:"column:id;PRIMARY_KEY"`
+	JobName              string          `json:"job_name" gorm:"column:job_name;type:varchar(512)"`
+	JobType              string          `json:"job_type" gorm:"column:job_type"`
+	ImportantDegree      string          `json:"important_degree" gorm:"column:important_degree"`
+	OpenDeployAutoConfig string          `json:"open_deploy_auto_config" gorm:"column:open_deploy_auto_config;type:text"`
+	TaskContent          string          `json:"task_content" gorm:"column:task_content;type:text"`
+	Remark               string          `json:"remark" gorm:"column:remark;type:text"`
+	CreatorUserId        int             `json:"creator_user_id" gorm:"column:creator_user_id;type:int"`
+	CreatorUserName      string          `json:"creator_user_name" gorm:"column:creator_user_name"`
+	ExecutorUserId       int             `json:"executor_user_id" gorm:"column:executor_user_id;type:int"`
+	ExecutorUserName     string          `json:"executor_user_name" gorm:"column:executor_user_name"`
+	RefuseReason         string          `json:"refuse_reason" gorm:"column:refuse_reason;type:text"`
+	Status               int8            `json:"status" gorm:"column:status"`
+	CreateTime           untils.JSONTime `json:"create_time" gorm:"column:create_time"`
+	AcceptTime           untils.JSONTime `json:"accept_time" gorm:"column:accept_time;default:null"`
+	EndTime              untils.JSONTime `json:"end_time" gorm:"column:end_time;default:null"`
 }
 
 func AddDailyJob(jobForm forms.AddDailyJobForm) (err error) {
 	dailyJob := DailyJob{
-		JobName: jobForm.JobName,
-		JobType: jobForm.JobType,
-		ImportantDegree: jobForm.ImportantDegree,
+		JobName:              jobForm.JobName,
+		JobType:              jobForm.JobType,
+		ImportantDegree:      jobForm.ImportantDegree,
 		OpenDeployAutoConfig: jobForm.OpenDeployAutoConfig,
-		Remark: jobForm.Remark,
-		TaskContent: jobForm.TaskContent,
-		CreatorUserId: jobForm.CreatorUserId,
-		CreatorUserName: jobForm.CreatorUserName,
-		Status: 1,
-		CreateTime: untils.GetNowTime(),
+		Remark:               jobForm.Remark,
+		TaskContent:          jobForm.TaskContent,
+		CreatorUserId:        jobForm.CreatorUserId,
+		CreatorUserName:      jobForm.CreatorUserName,
+		Status:               1,
+		CreateTime:           untils.GetNowTime(),
 	}
 	tx := database.MysqlClient.Begin()
 	err = tx.Create(&dailyJob).Error
@@ -53,7 +55,7 @@ func AddDailyJob(jobForm forms.AddDailyJobForm) (err error) {
 
 func UpdateDailyJob(jobForm forms.UpdateDailyJobForm) (err error) {
 	dailyJob := DailyJob{
-		ExecutorUserId: jobForm.UserId,
+		ExecutorUserId:   jobForm.UserId,
 		ExecutorUserName: jobForm.UserName,
 	}
 	switch jobForm.Action {
@@ -85,25 +87,35 @@ func UpdateDailyJob(jobForm forms.UpdateDailyJobForm) (err error) {
 			return errors.New("用户只能删除自己创建的任务")
 		}
 		break
+	case "refuseJob":
+		dailyJob.Status = int8(0)
+		dailyJob.RefuseReason = jobForm.RefuseReason
+		total := 0
+		database.MysqlClient.Model(&dailyJob).Where("status = 1 and id = ?",
+			jobForm.Id).Count(&total)
+		if total != 1 {
+			return errors.New("该任务处于不能被拒绝的状态")
+		}
+		break
 	default:
 		return errors.New("不支持的操作")
 	}
 
-	err = database.MysqlClient.Exec("update daily_jobs set status = ?, executor_user_id = ?, " +
-		"executor_user_name = ?, accept_time = ?, end_time = ? where id=?",
+	err = database.MysqlClient.Exec("update daily_jobs set status = ?, executor_user_id = ?, "+
+		"executor_user_name = ?, accept_time = ?, end_time = ?, refuse_reason = ? where id=?",
 		dailyJob.Status, dailyJob.ExecutorUserId, dailyJob.ExecutorUserName, dailyJob.AcceptTime,
-		dailyJob.EndTime, jobForm.Id).Error
+		dailyJob.EndTime, dailyJob.RefuseReason, jobForm.Id).Error
 	return
 }
 
 func UpdateDailyJobExecutorUser(data forms.UpdateDailyJobExecutorUserForm) (err error) {
- 	infoList := strings.Split(data.ChangeUserId, "-")
- 	var jobInfo DailyJob
- 	err = database.MysqlClient.Raw("select * from daily_jobs where id= ? ",
- 		data.JobId).Scan(&jobInfo).Error
- 	if err != nil {
- 		untils.Log.Error(err.Error())
- 		return
+	infoList := strings.Split(data.ChangeUserId, "-")
+	var jobInfo DailyJob
+	err = database.MysqlClient.Raw("select * from daily_jobs where id= ? ",
+		data.JobId).Scan(&jobInfo).Error
+	if err != nil {
+		untils.Log.Error(err.Error())
+		return
 	}
 	updateSql := "update daily_jobs set executor_user_id = ?, executor_user_name = ? where id = ?"
 	err = database.MysqlClient.Exec(updateSql, infoList[0], infoList[1], data.JobId).Error
@@ -116,10 +128,10 @@ func UpdateDailyJobExecutorUser(data forms.UpdateDailyJobExecutorUserForm) (err 
 func GetJobsCount(userId uint, queryKeyword string, queryCreateTime string) (total int) {
 	isSuperAdminOrOps := IsUserSuperAdminOrOps(userId)
 	total = 0
-	var querySql = "select count(*) from daily_jobs where status > 0 "
+	var querySql = "select count(*) from daily_jobs where status >= 0 "
 	var args []interface{}
 	if queryKeyword != "" {
-		querySql = fmt.Sprintf("%s and ( job_name like ? or creator_user_name like ? " +
+		querySql = fmt.Sprintf("%s and ( job_name like ? or creator_user_name like ? "+
 			"or executor_user_name like ?) ", querySql)
 		args = append(args, "%"+queryKeyword+"%", "%"+queryKeyword+"%", "%"+queryKeyword+"%")
 	}
@@ -137,10 +149,10 @@ func GetJobsCount(userId uint, queryKeyword string, queryCreateTime string) (tot
 
 func GetJobsByPage(userId uint, offset int, limit int, queryKeyword string, queryCreateTime string) (jobs []DailyJob) {
 	isSuperAdminOrOps := IsUserSuperAdminOrOps(userId)
-	var querySql = "select * from daily_jobs where status > 0 "
+	var querySql = "select * from daily_jobs where status >= 0 "
 	var args []interface{}
 	if queryKeyword != "" {
-		querySql = fmt.Sprintf("%s and (job_name like ? or creator_user_name like ? " +
+		querySql = fmt.Sprintf("%s and (job_name like ? or creator_user_name like ? "+
 			"or executor_user_name like ? ) ", querySql)
 		args = append(args, "%"+queryKeyword+"%", "%"+queryKeyword+"%", "%"+queryKeyword+"%")
 	}
