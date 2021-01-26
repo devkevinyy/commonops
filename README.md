@@ -7,7 +7,9 @@
 #### 功能介绍
 
 *   阿里云资源的同步集成，可查看资源核心指标监控图
+*   通过 Web SSH 的方式快速便捷管理服务器
 *   Kubernetes 集群管理，可查看 Node、Pod 的核心指标监控图
+*   通过 Web SSH 的方式安全便捷访问 Kubernetes 容器
 *   工单模块帮助团队协作
 *   基于RBAC的权限系统可细分控制团队成员角色的权限
 
@@ -18,7 +20,7 @@
 ```
 启动方式
 
-docker run -d -p 8880:80 -p 19999:9999 registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_system:0.4
+docker run -d -p 8880:80 -p 9999:9999 registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_system:0.5
 
 web 访问
 
