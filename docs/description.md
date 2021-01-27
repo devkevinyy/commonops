@@ -11,4 +11,4 @@
 
 如果你对该项目感兴趣，欢迎加入共同协作推进该项目。
 
-项目 Github 地址: &nbsp;&nbsp;&nbsp; [CandyOps Git Repo](https://github.com/chujieyang/commonops.git)
+项目 Github 地址: &nbsp;&nbsp;&nbsp; [CommonOps Git Repo](https://github.com/chujieyang/commonops.git)
