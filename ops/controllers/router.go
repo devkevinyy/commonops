@@ -70,7 +70,12 @@ func AuthMiddleWare() gin.HandlerFunc {
 
 func RegisterRouter(engine *gin.Engine) {
 	engine.POST("/user/login", user.ILogin)
-	engine.GET("/kubernetes/container_terminal", k8s.GetContainerTerminal)
+
+	wsRoute := engine.Group("/ws")
+	{
+		wsRoute.GET("/kubernetes/container_terminal", k8s.GetContainerTerminal)
+		wsRoute.GET("/cloud/ssh", cloud.WsSsh)
+	}
 
 	userRoute := engine.Group("/user", AuthMiddleWare())
 	{
@@ -112,7 +117,6 @@ func RegisterRouter(engine *gin.Engine) {
 		cloudRoute.GET("/other", cloud.IGetCloudOtherRes)
 		cloudRoute.POST("/other", cloud.IPostCloudOtherRes)
 		cloudRoute.DELETE("/other", cloud.IDeleteCloudOtherRes)
-		cloudRoute.GET("/ssh", cloud.WsSsh)
 	}
 
 	cloudMonitor := engine.Group("/cloud/monitor", AuthMiddleWare())

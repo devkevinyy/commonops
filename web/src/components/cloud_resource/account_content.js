@@ -354,7 +354,7 @@ class CloudContent extends Component {
                 >
                     <Form
                         ref={this.formRef}
-                        initialValues={{ accountType: "阿里云" }}
+                        initialValues={{ accountType: "私有云" }}
                     >
                         <Form.Item
                             label="云账号类型"
@@ -368,6 +368,7 @@ class CloudContent extends Component {
                             ]}
                         >
                             <Select size="default">
+                                <Option value="私有云">私有云</Option>
                                 <Option value="阿里云">阿里云</Option>
                             </Select>
                         </Form.Item>
@@ -389,10 +390,10 @@ class CloudContent extends Component {
                             {...formItemLayout}
                             name="accountPwd"
                             rules={[
-                                {
-                                    required: true,
-                                    message: "账号密码不能为空！",
-                                },
+                                // {
+                                //     required: true,
+                                //     message: "账号密码不能为空！",
+                                // },
                             ]}
                         >
                             <Input />
@@ -402,10 +403,10 @@ class CloudContent extends Component {
                             {...formItemLayout}
                             name="accountKey"
                             rules={[
-                                {
-                                    required: true,
-                                    message: "账号key不能为空！",
-                                },
+                                // {
+                                //     required: true,
+                                //     message: "账号key不能为空！",
+                                // },
                             ]}
                         >
                             <Input />
@@ -415,10 +416,10 @@ class CloudContent extends Component {
                             {...formItemLayout}
                             name="accountSecret"
                             rules={[
-                                {
-                                    required: true,
-                                    message: "账号secret不能为空！",
-                                },
+                                // {
+                                //     required: true,
+                                //     message: "账号secret不能为空！",
+                                // },
                             ]}
                         >
                             <Input />

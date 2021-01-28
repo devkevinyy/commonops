@@ -14,7 +14,7 @@ class WebTerminalContent extends Component {
         super(props);
         this.goBack = this.goBack.bind(this);
         this.rws = new ReconnectingWebSocket(
-            WSBase + "kubernetes/container_terminal",
+            WSBase + "/ws/kubernetes/container_terminal",
         );
         this.terminal = new Terminal({
             rows: 36,

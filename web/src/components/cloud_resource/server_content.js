@@ -23,7 +23,12 @@ import {
     Badge,
     Tooltip,
 } from "antd";
-import { SearchOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import {
+    SearchOutlined,
+    PlusCircleOutlined,
+    EyeInvisibleOutlined,
+    EyeTwoTone,
+} from "@ant-design/icons";
 import OpsBreadcrumbPath from "../breadcrumb_path";
 import moment from "moment";
 import "../../assets/css/main.css";
@@ -248,7 +253,15 @@ class ServerInfoModal extends Component {
                         {...formItemLayout}
                         name="sshPwd"
                     >
-                        <Input />
+                        <Input.Password
+                            iconRender={(visible) =>
+                                visible ? (
+                                    <EyeTwoTone />
+                                ) : (
+                                    <EyeInvisibleOutlined />
+                                )
+                            }
+                        />
                     </Form.Item>
                 </Form>
             </Modal>
@@ -996,7 +1009,11 @@ class ServerContent extends Component {
         let dom = document.getElementById("server_terminal");
         if (dom) {
             this.rws = new ReconnectingWebSocket(
-                WSBase + "cloud/ssh?serverId="+this.state.currentServerDetail.ID+"&token="+localStorage.getItem("ops_token"),
+                WSBase +
+                    "ws/cloud/ssh?serverId=" +
+                    this.state.currentServerDetail.ID +
+                    "&token=" +
+                    localStorage.getItem("ops_token"),
             );
             this.terminal = new Terminal({
                 rows: 36,
