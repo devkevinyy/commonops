@@ -345,7 +345,7 @@ func DiffDataCheck() {
 
 func ScraperK8sMetricsData() {
 	cleanTime := time.Duration(5) * time.Minute
-	database.CullDatabase(&cleanTime)
+	database.CleanDatabase(&cleanTime)
 	var k8sList []models.K8s
 	if err := database.MysqlClient.Raw("select * from k8s where data_status > 0 ").Scan(&k8sList).Error; err != nil {
 		fmt.Println(err)
@@ -368,10 +368,11 @@ func ScraperK8sMetricsData() {
 		}
 
 		nodeMetrics, err := clientset.MetricsV1beta1().NodeMetricses().List(context.TODO(), metav1.ListOptions{})
+		database.UpdateNodeMetrics(k8sInfo.ClusterId, nodeMetrics)
 
 		for _, namespace := range namespaceList.Items {
 			podMetrics, _ := clientset.MetricsV1beta1().PodMetricses(namespace.Name).List(context.TODO(), metav1.ListOptions{})
-			database.UpdateDatabase(k8sInfo.ClusterId, nodeMetrics, podMetrics)
+			database.UpdatePodMetrics(k8sInfo.ClusterId, podMetrics)
 		}
 	}
 

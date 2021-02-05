@@ -4,9 +4,11 @@
 
 #### 2、[工单协作](func_desc/jobs.md)
 
-#### 3、[Kubernetes 管理](func_desc/kubernetes.md)
+#### 3、[DMS管理](func_desc/dms.md)
 
-#### 4、[系统权限管理](func_desc/auth.md)
+#### 4、[Kubernetes 管理](func_desc/kubernetes.md)
 
-#### 5、[系统管理](func_desc/system.md)
+#### 5、[系统权限管理](func_desc/auth.md)
+
+#### 6、[系统管理](func_desc/system.md)
 

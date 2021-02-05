@@ -25,6 +25,7 @@ import {
     postDmsInstanceDbData,
 } from "../../api/dms_api";
 import { SearchOutlined, PlusCircleOutlined } from "@ant-design/icons";
+import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
 const { Content } = Layout;
 
 const { Text } = Typography;
@@ -349,8 +350,11 @@ class InstanceManageContent extends Component {
     }
 
     handleSubmitAddInstanceDb() {
-        postDmsInstanceDbData({instanceId: this.state.addInstanceId, dbName: this.state.inputDbName}).then((res)=>{
-            if(res.code===0) {
+        postDmsInstanceDbData({
+            instanceId: this.state.addInstanceId,
+            dbName: this.state.inputDbName,
+        }).then((res) => {
+            if (res.code === 0) {
                 message.success("添加成功");
                 this.onExpand(true, { InstanceId: this.state.addInstanceId });
                 this.setState({
@@ -588,7 +592,15 @@ class InstanceManageContent extends Component {
                                 },
                             ]}
                         >
-                            <Input />
+                            <Input.Password
+                                iconRender={(visible) =>
+                                    visible ? (
+                                        <EyeTwoTone />
+                                    ) : (
+                                        <EyeInvisibleOutlined />
+                                    )
+                                }
+                            />
                         </Form.Item>
                     </Form>
                 </Modal>

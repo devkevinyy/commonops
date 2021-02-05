@@ -485,7 +485,9 @@ VALUES
 	(91,1,10),
 	(92,1,1),
 	(93,1,2),
-	(94,2,17);
+  (94,1,17),
+  (95,1,18),
+  (96,1,19);
 
 /*!40000 ALTER TABLE `role_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -596,8 +598,7 @@ LOCK TABLES `user_roles` WRITE;
 
 INSERT INTO `user_roles` (`id`, `user_id`, `role_id`)
 VALUES
-	(2,1,1),
-	(3,1,2);
+	(2,1,1);
 
 /*!40000 ALTER TABLE `user_roles` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -658,3 +659,33 @@ CREATE TABLE `k8s` (
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+DROP TABLE IF EXISTS `nodes`;
+
+CREATE TABLE `nodes` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cid` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cpu` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `memory` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `storage` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+DROP TABLE IF EXISTS `pods`;
+
+CREATE TABLE `pods` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `uid` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cid` varchar(256) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `namespace` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `container` varchar(512) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cpu` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `memory` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `storage` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `time` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

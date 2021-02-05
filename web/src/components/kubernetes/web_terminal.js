@@ -14,7 +14,7 @@ class WebTerminalContent extends Component {
         super(props);
         this.goBack = this.goBack.bind(this);
         this.rws = new ReconnectingWebSocket(
-            WSBase + "/ws/kubernetes/container_terminal",
+            WSBase + "ws/kubernetes/container_terminal",
         );
         this.terminal = new Terminal({
             rows: 36,
@@ -35,7 +35,7 @@ class WebTerminalContent extends Component {
 
     componentDidMount() {
         this.terminal.open(document.getElementById("terminal"));
-        this.terminal.writeln("Welcome to use FuLu Web Terminal.");
+        this.terminal.writeln("Welcome to use Web Terminal.");
         this.terminal.prompt();
         this.initWsConnection();
         attachAddon = new AttachAddon(this.rws);
