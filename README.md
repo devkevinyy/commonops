@@ -23,9 +23,12 @@
 
 docker run -d -p 8880:80 -p 9999:9999 registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_system:0.6
 
+Host 设置
+设置访问侧 host 文件: commonops.com  --->  you server ip
+
 web 访问
 
-http://localhost:8880
+http://commonops.com:8880
 
 初次访问账号
 

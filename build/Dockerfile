@@ -27,7 +27,7 @@ WORKDIR /go/src/github.com/chujieyang/ops/
 COPY ./ref/* ./
 COPY ops.go ./
 ADD ./web.tar ./
-RUN mkdir ./jars && mkdir ./conf && chmod +x ./mysql.sh && chmod +x ./entrypoint.sh
+RUN mkdir ./jars && mkdir ./conf && chmod +x ./mysql.sh && chmod +x ./entrypoint.sh && touch ops.log
 COPY ./ref/sqlparser.jar ./jars/
 
 EXPOSE 80
