@@ -35,10 +35,6 @@ let columnStyle = {
 };
 
 class RoleModal extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const formItemLayout = {
             labelCol: { span: 6 },
@@ -124,7 +120,7 @@ class UserManagerModal extends Component {
                 if (res.code === 0) {
                     let inGroupData = [];
                     let allGroupData = [];
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         allGroupData.push({
                             key: String(item.ID),
                             id: String(item.ID),
@@ -132,7 +128,7 @@ class UserManagerModal extends Component {
                             position: item.position,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         inGroupData.push(String(item.ID));
                     });
                     this.setState({
@@ -259,7 +255,7 @@ class ResourceManagerModal extends Component {
         getRoleResourceList(roleId, "ecs")
             .then((res) => {
                 if (res.code === 0) {
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         ecsAllGroupData.push({
                             key: String(item.ID),
                             id: String(item.ID),
@@ -270,7 +266,7 @@ class ResourceManagerModal extends Component {
                                 item.PublicIpAddress,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         ecsInGroupData.push(String(item.ID));
                     });
                     this.setState({
@@ -296,7 +292,7 @@ class ResourceManagerModal extends Component {
         getRoleResourceList(roleId, "rds")
             .then((res) => {
                 if (res.code === 0) {
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         rdsAllGroupData.push({
                             key: String(item.ID),
                             id: String(item.ID),
@@ -304,7 +300,7 @@ class ResourceManagerModal extends Component {
                             db_instance_id: item.DBInstanceId,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         rdsInGroupData.push(String(item.ID));
                     });
                     this.setState({
@@ -330,7 +326,7 @@ class ResourceManagerModal extends Component {
         getRoleResourceList(roleId, "kv")
             .then((res) => {
                 if (res.code === 0) {
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         kvAllGroupData.push({
                             key: String(item.ID),
                             id: String(item.ID),
@@ -338,7 +334,7 @@ class ResourceManagerModal extends Component {
                             connection_domain: item.ConnectionDomain,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         kvInGroupData.push(String(item.ID));
                     });
                     this.setState({
@@ -364,7 +360,7 @@ class ResourceManagerModal extends Component {
         getRoleResourceList(roleId, "slb")
             .then((res) => {
                 if (res.code === 0) {
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         slbAllGroupData.push({
                             key: String(item.ID),
                             id: String(item.ID),
@@ -372,7 +368,7 @@ class ResourceManagerModal extends Component {
                             address: item.Address,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         slbInGroupData.push(String(item.ID));
                     });
                     this.setState({
@@ -398,7 +394,7 @@ class ResourceManagerModal extends Component {
         getRoleResourceList(roleId, "other")
             .then((res) => {
                 if (res.code === 0) {
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         otherAllGroupData.push({
                             key: String(item.ID),
                             id: String(item.ID),
@@ -406,7 +402,7 @@ class ResourceManagerModal extends Component {
                             res_type: item.ResType,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         otherInGroupData.push(String(item.ID));
                     });
                     this.setState({
@@ -713,7 +709,7 @@ class AuthLinkManagerModal extends Component {
                 if (res.code === 0) {
                     let inGroupData = [];
                     let allGroupData = [];
-                    res.data.all.forEach(function(item) {
+                    res.data.all.forEach(function (item) {
                         allGroupData.push({
                             key: String(item.Id),
                             id: String(item.Id),
@@ -721,7 +717,7 @@ class AuthLinkManagerModal extends Component {
                             url_path: item.urlPath,
                         });
                     });
-                    res.data.in.forEach(function(item) {
+                    res.data.in.forEach(function (item) {
                         inGroupData.push(String(item.Id));
                     });
                     this.setState({
@@ -976,7 +972,7 @@ class RolesManager extends Component {
                         message.error(err.toLocaleString());
                     });
             },
-            onCancel() {},
+            onCancel() { },
         });
     };
 
@@ -1162,8 +1158,8 @@ class RolesManager extends Component {
                         )}
                     />
                 ) : (
-                    ""
-                )}
+                        ""
+                    )}
                 {this.state.resourceManagerModalVisible ? (
                     <ResourceManagerModal
                         roleId={this.state.roleId}
@@ -1181,8 +1177,8 @@ class RolesManager extends Component {
                         )}
                     />
                 ) : (
-                    ""
-                )}
+                        ""
+                    )}
                 {this.state.authLinkManagerModalVisible ? (
                     <AuthLinkManagerModal
                         roleId={this.state.roleId}
@@ -1200,8 +1196,8 @@ class RolesManager extends Component {
                         )}
                     />
                 ) : (
-                    ""
-                )}
+                        ""
+                    )}
                 <Table
                     columns={this.state.columns}
                     dataSource={this.state.tableData}

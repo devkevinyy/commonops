@@ -6,7 +6,7 @@ import Jobs_content from "./jobs_content";
 
 const { Content } = Layout;
 
-class Task_content extends Component {
+export default class TaskContent extends Component {
     render() {
         return (
             <Content style={{
@@ -14,11 +14,9 @@ class Task_content extends Component {
             }}>
                 <Switch>
                     <Route path="/admin/task/deploy_project" component={Deploy_project_content} />
-                    <Route path="/admin/task/jobs" component={Jobs_content}/>
+                    <Route path="/admin/task/jobs" component={Jobs_content} />
                 </Switch>
             </Content>
         );
     }
 }
-
-export default Task_content;

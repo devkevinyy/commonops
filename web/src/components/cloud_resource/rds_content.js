@@ -242,7 +242,6 @@ class RdsContent extends Component {
                     dataIndex: "DBInstanceDescription",
                     key: "DBInstanceDescription",
                     width: 200,
-                    width: 250,
                     render: (value, record) => {
                         return (
                             <Tooltip title={value}>

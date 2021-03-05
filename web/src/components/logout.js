@@ -1,8 +1,6 @@
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 
-
-
-class LogoutContent extends Component {
+export default class LogoutContent extends Component {
 
     componentWillMount() {
         localStorage.removeItem("ops_token");
@@ -19,6 +17,3 @@ class LogoutContent extends Component {
     }
 
 }
-
-
-export default LogoutContent;

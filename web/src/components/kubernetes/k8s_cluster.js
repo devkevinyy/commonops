@@ -44,7 +44,7 @@ class ClusterManageContent extends Component {
         let that = this;
         message.loading("集群连接初始化中，即将跳转...", 0.6);
         localStorage.setItem("clusterId", clusterId);
-        setTimeout(function() {
+        setTimeout(function () {
             that.props.history.push({ pathname: "/admin/k8s_cluster/manage" });
         }, 600);
     }
@@ -138,62 +138,62 @@ class ClusterManageContent extends Component {
                             description="暂未添加任何kubernetes集群"
                         />
                     ) : (
-                        <List
-                            grid={{
-                                gutter: 20,
-                                column: 4,
-                            }}
-                            style={{ width: "100%" }}
-                            dataSource={this.state.clusterData}
-                            renderItem={(item) => (
-                                <List.Item>
-                                    <Card title={item.name} size="small">
-                                        <div
-                                            style={{
-                                                height: "50px",
-                                                fontSize: "13px",
-                                            }}
-                                        >
-                                            {item.description}
-                                        </div>
-                                        <div style={{ marginTop: "10px" }}>
-                                            <Button
-                                                type="link"
-                                                size="small"
-                                                style={{ float: "left" }}
-                                                onClick={this.enterToCluster.bind(
-                                                    this,
-                                                    item.clusterId,
-                                                )}
+                            <List
+                                grid={{
+                                    gutter: 20,
+                                    column: 4,
+                                }}
+                                style={{ width: "100%" }}
+                                dataSource={this.state.clusterData}
+                                renderItem={(item) => (
+                                    <List.Item>
+                                        <Card title={item.name} size="small">
+                                            <div
+                                                style={{
+                                                    height: "50px",
+                                                    fontSize: "13px",
+                                                }}
                                             >
-                                                进入集群
-                                            </Button>
-                                            <Popconfirm
-                                                title="确定移除该集群吗?"
-                                                okText="确认"
-                                                cancelText="取消"
-                                                onConfirm={this.confirmDeleteCluster.bind(
-                                                    this,
-                                                    item.id,
-                                                )}
-                                            >
+                                                {item.description}
+                                            </div>
+                                            <div style={{ marginTop: "10px" }}>
                                                 <Button
                                                     type="link"
                                                     size="small"
-                                                    style={{
-                                                        color: "red",
-                                                        float: "right",
-                                                    }}
+                                                    style={{ float: "left" }}
+                                                    onClick={this.enterToCluster.bind(
+                                                        this,
+                                                        item.clusterId,
+                                                    )}
                                                 >
-                                                    删除集群
+                                                    进入集群
+                                            </Button>
+                                                <Popconfirm
+                                                    title="确定移除该集群吗?"
+                                                    okText="确认"
+                                                    cancelText="取消"
+                                                    onConfirm={this.confirmDeleteCluster.bind(
+                                                        this,
+                                                        item.id,
+                                                    )}
+                                                >
+                                                    <Button
+                                                        type="link"
+                                                        size="small"
+                                                        style={{
+                                                            color: "red",
+                                                            float: "right",
+                                                        }}
+                                                    >
+                                                        删除集群
                                                 </Button>
-                                            </Popconfirm>
-                                        </div>
-                                    </Card>
-                                </List.Item>
-                            )}
-                        />
-                    )}
+                                                </Popconfirm>
+                                            </div>
+                                        </Card>
+                                    </List.Item>
+                                )}
+                            />
+                        )}
                 </Row>
 
                 <Modal
@@ -232,9 +232,7 @@ class ClusterManageContent extends Component {
                                 { required: true, message: "该项为必填项" },
                             ]}
                         >
-                            <Input
-                                addonBefore="http://"
-                            />
+                            <Input />
                         </Form.Item>
                         <Form.Item
                             label="Admin Token"

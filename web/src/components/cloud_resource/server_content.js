@@ -258,8 +258,8 @@ class ServerInfoModal extends Component {
                                 visible ? (
                                     <EyeTwoTone />
                                 ) : (
-                                    <EyeInvisibleOutlined />
-                                )
+                                        <EyeInvisibleOutlined />
+                                    )
                             }
                         />
                     </Form.Item>
@@ -298,7 +298,6 @@ class ServerContent extends Component {
                     width: 230,
                     dataIndex: "InstanceId",
                     key: "InstanceId",
-                    width: 200,
                 },
                 {
                     title: "实例名称",
@@ -1010,10 +1009,10 @@ class ServerContent extends Component {
         if (dom) {
             this.rws = new ReconnectingWebSocket(
                 WSBase +
-                    "ws/cloud/ssh?serverId=" +
-                    this.state.currentServerDetail.ID +
-                    "&token=" +
-                    localStorage.getItem("ops_token"),
+                "ws/cloud/ssh?serverId=" +
+                this.state.currentServerDetail.ID +
+                "&token=" +
+                localStorage.getItem("ops_token"),
             );
             this.terminal = new Terminal({
                 rows: 36,

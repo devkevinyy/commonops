@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/chujieyang/commonops/ops/conf"
 	"github.com/chujieyang/commonops/ops/controllers"
 	_ "github.com/chujieyang/commonops/ops/cron"
@@ -29,6 +28,6 @@ func main() {
 	controllers.RegisterRouter(engine)
 	err := engine.Run(":" + conf.Port)
 	if err != nil {
-		fmt.Println("启动异常: ", err)
+		panic("启动异常: " + err.Error())
 	}
 }

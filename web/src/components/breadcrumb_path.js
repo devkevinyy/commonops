@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Breadcrumb } from 'antd';
 
 
-class OpsBreadcrumbPath extends Component {
+export default class OpsBreadcrumbPath extends Component {
 
     static defaultProps = {
         pathData: [],
@@ -19,8 +19,7 @@ class OpsBreadcrumbPath extends Component {
                     })
                 }
             </Breadcrumb>
-    );
-  }
+        );
+    }
 }
 
-export default OpsBreadcrumbPath;

@@ -1,5 +1,5 @@
-import React, {Component} from 'react';
-import {Layout, Table, Form, Button, Row, Col} from 'antd';
+import React, { Component } from 'react';
+import { Layout, Table, Button, Row, Col } from 'antd';
 import {
     getUserFeedbackList
 } from "../../api/system";
@@ -8,14 +8,14 @@ import OpsBreadcrumbPath from "../breadcrumb_path";
 const { Content } = Layout;
 
 let columnStyle = {
-    overFlow : "hidden",
+    overFlow: "hidden",
     textOverflow: "ellipsis",
     display: "-webkit-box",
 };
 
 class UserFeedbackManager extends Component {
 
-    constructor(props){
+    constructor(props) {
         super(props);
         this.refreshTableData = this.refreshTableData.bind(this);
         this.onShowSizeChange = this.onShowSizeChange.bind(this);
@@ -28,13 +28,13 @@ class UserFeedbackManager extends Component {
                     title: '用户', dataIndex: 'username', key: 'username', className: 'small_font',
                 },
                 {
-                    title: '内容', dataIndex: 'content', key: 'content', className: "small_font "+{columnStyle},
+                    title: '内容', dataIndex: 'content', key: 'content', className: "small_font " + { columnStyle },
                 },
                 {
-                    title: '评分', dataIndex: 'score', key: 'score', className: "small_font "+{columnStyle},
+                    title: '评分', dataIndex: 'score', key: 'score', className: "small_font " + { columnStyle },
                 },
                 {
-                    title: '创建时间', dataIndex: 'createTime', key: 'createTime', className: "small_font "+{columnStyle},
+                    title: '创建时间', dataIndex: 'createTime', key: 'createTime', className: "small_font " + { columnStyle },
                 }
             ],
             tableData: [],
@@ -55,7 +55,7 @@ class UserFeedbackManager extends Component {
         }
     }
 
-    onShowSizeChange(current, size){
+    onShowSizeChange(current, size) {
         this.setState({
             pagination: {
                 ...this.state.pagination,
@@ -63,7 +63,7 @@ class UserFeedbackManager extends Component {
                 current: 1,
                 pageSize: size,
             }
-        }, ()=>{
+        }, () => {
             this.refreshTableData();
         });
     }
@@ -75,14 +75,14 @@ class UserFeedbackManager extends Component {
                 page: e,
                 current: e
             }
-        }, ()=>{
+        }, () => {
             this.refreshTableData();
         });
     };
 
     refreshTableData = () => {
-        this.setState({tableLoading: true});
-        getUserFeedbackList(this.state.pagination.page, this.state.pagination.pageSize).then((res)=>{
+        this.setState({ tableLoading: true });
+        getUserFeedbackList(this.state.pagination.page, this.state.pagination.pageSize).then((res) => {
             const pagination = this.state.pagination;
             pagination.total = parseInt(res.data.total);
             pagination.page = parseInt(res.data.page);
@@ -101,8 +101,8 @@ class UserFeedbackManager extends Component {
                     score: data[i]['score'],
                 });
             }
-            this.setState({tableData: tableData, tableLoading: false});
-        }).catch((err)=>{
+            this.setState({ tableData: tableData, tableLoading: false });
+        }).catch((err) => {
             console.log(err)
         });
     };
@@ -124,7 +124,7 @@ class UserFeedbackManager extends Component {
                         </Col>
                     </Row>
                 </div>
-                <Table columns={this.state.columns} dataSource={this.state.tableData} scroll={{ x: 'max-content' }} pagination={this.state.pagination} loading={this.state.tableLoading} rowClassName="fixedHeight" size="small"/>
+                <Table columns={this.state.columns} dataSource={this.state.tableData} scroll={{ x: 'max-content' }} pagination={this.state.pagination} loading={this.state.tableLoading} rowClassName="fixedHeight" size="small" />
             </Content>
         );
     }

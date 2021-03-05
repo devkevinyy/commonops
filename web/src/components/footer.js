@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import { Layout, Popover, Typography } from 'antd';
-const { Footer} = Layout;
+const { Footer } = Layout;
 
 const { Text } = Typography;
 
-class OpsFooter extends Component {
+export default class OpsFooter extends Component {
 
   constructor(props) {
     super(props);
@@ -17,12 +17,10 @@ class OpsFooter extends Component {
     return (
       <Footer style={{ textAlign: 'center', padding: '15px 50px' }}>
         ©2019-{this.state.currentYear} Created by &nbsp;
-        <Popover content={<div className="wechat"/>} >
-            <Text underline>KevinYang</Text>
+        <Popover content={<div className="wechat" />} >
+          <Text underline>KevinYang</Text>
         </Popover>
       </Footer>
     );
   }
 }
-
-export default OpsFooter;

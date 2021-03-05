@@ -27,10 +27,6 @@ let columnStyle = {
 };
 
 class AuthLinkModal extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const formItemLayout = {
             labelCol: { span: 6 },

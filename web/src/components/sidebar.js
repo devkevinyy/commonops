@@ -8,7 +8,7 @@ import { getUserPermissionsList } from "../api/permission";
 const { Sider } = Layout;
 const SubMenu = Menu.SubMenu;
 
-class OpsSider extends Component {
+export default class OpsSider extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -127,4 +127,3 @@ class OpsSider extends Component {
     }
 }
 
-export default OpsSider;

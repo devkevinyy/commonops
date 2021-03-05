@@ -27,10 +27,6 @@ let columnStyle = {
 };
 
 class UserModal extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render() {
         const formItemLayout = {
             labelCol: { span: 7 },
@@ -153,10 +149,10 @@ class UserManager extends Component {
                                 <Tag color="geekblue">正常</Tag>
                             </Text>
                         ) : (
-                            <Text ellipsis={true}>
-                                <Tag color="red">禁用</Tag>
-                            </Text>
-                        );
+                                <Text ellipsis={true}>
+                                    <Tag color="red">禁用</Tag>
+                                </Text>
+                            );
                     },
                 },
                 {
