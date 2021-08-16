@@ -1,0 +1,13 @@
+FROM registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_nginx_base:1.0
+MAINTAINER ChujieYang "yangchujie1@163.com"
+
+WORKDIR /go/src/github.com/chujieyang/ops/
+
+COPY ./ref/frontend_nginx.conf ./
+COPY ./ref/frontend_entrypoint.sh ./
+ADD ./web.tar ./
+RUN chmod +x ./frontend_entrypoint.sh
+
+EXPOSE 80
+
+ENTRYPOINT ["./frontend_entrypoint.sh"]

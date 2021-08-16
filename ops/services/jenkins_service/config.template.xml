@@ -1,0 +1,77 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@2.40">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@1.8.4" />
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@1.8.4">
+      <jobProperties />
+      <triggers />
+      <parameters />
+      <options />
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description></description>
+  <keepDependencies>false</keepDependencies>
+  <properties />
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@2.90">
+    <script>pipeline {
+  agent any
+  tools {
+    maven 'maven_3.3.3';
+  }
+  environment {
+    GIT_REPO = "{{.GitRepo}}"
+    BRANCH = "{{.GitBranch}}"
+    GIT_CREDENTIALSId = "{{.GitCredentialId}}"
+    DOCKER_IMAGE_REPO = "{{.DockerImageRepo}}"
+    DOCKER_IAMGE_CREDENTIALSId = "{{.DockerImageCredentialId}}"
+    IMAGE_NAME = "{{.DockerImageName}}"
+  }
+  stages {
+    stage("检出") {
+      steps {
+        checkout(
+          [$class: "GitSCM",
+          userRemoteConfigs: [[
+            url: "${env.GIT_REPO}",
+            credentialsId: "${env.GIT_CREDENTIALSId}"
+          ]],
+          branches: [[name: "${env.BRANCH}"]],
+          ]
+        )
+      }
+    }
+
+    stage("Maven Build") {
+        steps {
+            sh "cd test; mvn -B -DskipTests clean package";
+        }
+    }
+
+    stage("构建镜像并推送到镜像库") {
+      steps {
+        script {
+          sh 'echo "build and push"';
+          docker.withRegistry(
+            "${env.DOCKER_IMAGE_REPO}",
+            "${env.DOCKER_IAMGE_CREDENTIALSId}"
+          ) {
+            def dockerImage = docker.build("${env.IMAGE_NAME}:${env.BUILD_NUMBER}", "-f Dockerfile .")
+            dockerImage.push()
+          }
+        }
+      }
+    }
+  }
+  
+  post {
+    success {  // 此处内容不要修改
+        sh 'echo "${env.IMAGE_NAME}:${env.BUILD_NUMBER}" > jenkins_ci_image_result.info'
+        archiveArtifacts artifacts: "jenkins_ci_image_result.info", fingerprint: true
+    }
+  }
+}</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers />
+  <disabled>false</disabled>
+</flow-definition>

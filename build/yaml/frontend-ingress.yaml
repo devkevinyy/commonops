@@ -1,0 +1,18 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: opsweb-ingress
+  namespace: ops
+spec:
+  rules:
+  - host: ops.xxxxxxx.com
+    http:
+      paths:
+      - backend:
+          serviceName: opsweb-service
+          servicePort: 80
+        path: /
+  tls:
+  - hosts:
+    - ops.xxxxxxx.com
+    secretName: xxxxxxxx-ssl

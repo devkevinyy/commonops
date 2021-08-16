@@ -1,0 +1,14 @@
+FROM registry.cn-hangzhou.aliyuncs.com/kevin_yang/ops_nginx_base:1.0
+MAINTAINER ChujieYang "yangchujie1@163.com"
+
+WORKDIR /go/src/github.com/chujieyang/ops/
+
+COPY ./ref/* ./
+COPY ops.go ./
+RUN mkdir ./jars && mkdir ./conf && chmod +x ./mysql.sh && chmod +x ./backend_entrypoint.sh && touch ops.log
+COPY ./ref/config.ini ./conf/
+COPY ./ref/sqlparser.jar ./jars/
+
+EXPOSE 9999
+
+ENTRYPOINT ["./backend_entrypoint.sh"]

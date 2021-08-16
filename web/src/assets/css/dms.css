@@ -1,0 +1,19 @@
+.CodeMirror {
+    background-color: #ddffff !important;
+    padding: 10px;
+    border-left: 6px solid #ccc !important;
+    border-color: #2196f3 !important;
+    height: 100%;
+}
+
+.sqlEditor {
+    width: 100%;
+}
+
+.react-codemirror2 {
+    height: 100%;
+}
+
+.ant-table-pagination.ant-pagination {
+    margin: 5px 0px;
+}

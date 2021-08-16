@@ -1,0 +1,23 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+    annotations:
+        kubernetes.io/ingress.class: nginx
+        nginx.ingress.kubernetes.io/rewrite-target: /$2
+        nginx.ingress.kubernetes.io/service-weight: ""
+        nginx.ingress.kubernetes.io/use-regex: "true"
+    name: opssvr-ingress
+    namespace: ops
+spec:
+    rules:
+        - host: ops.xxxxxxx.com
+          http:
+              paths:
+                  - backend:
+                        serviceName: opssvr-service
+                        servicePort: 80
+                    path: /api(/|$)(.*)
+    tls:
+        - hosts:
+              - ops.xxxxxxx.com
+          secretName: xxxxxxx-ssl

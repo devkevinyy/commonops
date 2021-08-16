@@ -1,0 +1,5 @@
+.idea/
+*.log
+ops/conf/config.ini
+vendor
+web/node_modules

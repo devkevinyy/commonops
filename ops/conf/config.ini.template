@@ -1,0 +1,17 @@
+[app]
+Host                          = "localhost"                     #	后端服务监听IP
+Port                          = "9999"                          # 后端服务监听端口
+SecretSalt                    = "2019Ops06061252Dev_Fulu"
+DesKey                        = "9745YcjX"
+DmsConcurrentOperationNum     = 2                               # DMS 同一个库并发操作数量
+
+[database]
+MysqlHost = "localhost:3306" # mysql 连接地址
+MysqlUser = "test"          # mysql 用户名
+MysqlPwd  = "11123er"   # mysql 密码
+MysqlDb   = "commonops"     # mysql 连接数据库名
+
+[jenkins]
+JenkinsHost = "http://10.0.0.31:9090"  # jenkins 访问地址
+JenkinsAuthUser = "admin"
+JenkinsAuthToken = "11b2183f37905ab28164bd0cea60cf7d90" # jenkins 访问 Token
