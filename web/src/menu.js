@@ -4,6 +4,7 @@ const topMenus = [
         icon: "user",
         subMenus: [
             { title: "修改密码", route: "/admin/permission/password" },
+            { title: "用户信息", route: "/admin/permission/userinfo" },
             { title: "退出", route: "/admin/logout" },
         ],
     },
@@ -43,6 +44,13 @@ const sideMenus = [
         menuTitle: "域名DNS",
         icon: "CompassOutlined",
         subMenus: [{ title: "解析管理", route: "/admin/dns/domain_manage" }],
+    },
+    {
+        menuTitle: "批量执行",
+        icon: "SendOutlined",
+        subMenus: [
+            { title: "批量命令", route: "/admin/batch/cmds"},
+        ],
     },
     {
         menuTitle: "集成部署",
