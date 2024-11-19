@@ -40,10 +40,3 @@ http://commonops.com:8880
 
 [项目文档](https://chujieyang.github.io/commonops/)
 
-#### 关注公众号
-
-<img src="https://github.com/chujieyang/commonops/blob/dev/images/wechat-media.png" width="380px" height="160px">
-
-#### 研发效能内容相关
-
--   [工程技术+研发效能汇总](https://justlean.cn)
