@@ -449,7 +449,7 @@ func ICreateAuthLink(c *gin.Context) {
 		c.JSON(http.StatusOK, utils.RespData{Code: -1, Msg: string(err.Error()), Data: nil})
 		return
 	}
-	err = models.AddAuthLink(req["name"], req["description"], req["path"])
+	err = models.AddAuthLink(req["name"], req["description"], req["urlPath"], req["authType"])
 	if err != nil {
 		c.JSON(http.StatusOK, utils.RespData{Code: -1, Msg: err.Error(), Data: nil})
 		return
@@ -473,6 +473,18 @@ func IDeleteAuthLink(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, utils.RespData{Code: 0, Msg: "success", Data: nil})
+}
+
+// IGetAuthLinkDetail gets detail of authLink
+// [api get]: 获取权限链接详情
+func IGetAuthLink(c *gin.Context) {
+	id, _ := strconv.Atoi(c.Query("id"))
+	authLink, err := models.GetAuthLink(id)
+	if err != nil {
+		c.JSON(http.StatusOK, utils.RespData{Code: -1, Msg: err.Error(), Data: nil})
+		return
+	}
+	c.JSON(http.StatusOK, utils.RespData{Code: 0, Msg: "success", Data: authLink})
 }
 
 /*

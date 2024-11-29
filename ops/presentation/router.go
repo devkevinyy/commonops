@@ -1,6 +1,7 @@
 package presentation
 
 import (
+	"github.com/chujieyang/commonops/ops/presentation/batch"
 	"github.com/chujieyang/commonops/ops/presentation/cd"
 	"github.com/chujieyang/commonops/ops/presentation/ci"
 	"github.com/chujieyang/commonops/ops/presentation/cloud_account"
@@ -15,12 +16,14 @@ import (
 	"github.com/chujieyang/commonops/ops/presentation/monitor"
 	"github.com/chujieyang/commonops/ops/presentation/nacos"
 	"github.com/chujieyang/commonops/ops/presentation/other"
+	"github.com/chujieyang/commonops/ops/presentation/permission"
 	"github.com/chujieyang/commonops/ops/presentation/rds"
 	"github.com/chujieyang/commonops/ops/presentation/slb"
 	"github.com/chujieyang/commonops/ops/presentation/user"
 	"github.com/gin-gonic/gin"
 )
 
+// RegisterRouter is a global router register
 func RegisterRouter(engine *gin.Engine) {
 	engine.POST("/user/login", user.ILogin)
 	engine.GET("/hc", user.ILogin)
@@ -98,14 +101,16 @@ func RegisterRouter(engine *gin.Engine) {
 		roleRoute.GET("/resources", user.IGetRoleResourceList)
 		roleRoute.POST("/resources", user.IPostRoleResourcesList)
 		roleRoute.GET("/authLink", user.IGetRoleAuthLinkList)
-		roleRoute.POST("/authLink", user.ICreateAuthLink)
 		roleRoute.POST("/authLinks", user.ICreateRoleAuthLink)
-		roleRoute.DELETE("/authLink", user.IDeleteAuthLink)
 	}
 
 	permissionRoute := engine.Group("/permissions", middleware.AuthMiddleWare())
 	{
-		permissionRoute.GET("/list", user.IGetPermissionsList)
+		permissionRoute.GET("/list", permission.IGetPermissionsList)
+		permissionRoute.GET("/authLink", permission.IGetAuthLink)
+		permissionRoute.PUT("/authLink", permission.IPutAuthLink)
+		permissionRoute.POST("/authLink", permission.ICreateAuthLink)
+		permissionRoute.DELETE("/authLink", permission.IDeleteAuthLink)
 	}
 
 	jobRoute := engine.Group("/dailyJob", middleware.AuthMiddleWare())
@@ -232,6 +237,11 @@ func RegisterRouter(engine *gin.Engine) {
 		cdRoute.POST("/processTemplate", cd.IPostCdProcessTemplate)
 		cdRoute.GET("/processLog", cd.IGetCdProcessLog)
 		cdRoute.POST("/processLog", cd.IPostCdProcessLog)
+	}
+
+	batchRoute := engine.Group("/batch", middleware.AuthMiddleWare())
+	{
+		batchRoute.GET("/allNodeTree", batch.IGetAllNodeTree)
 	}
 
 }
