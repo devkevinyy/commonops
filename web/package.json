@@ -17,7 +17,7 @@
     "jwt-decode": "^2.2.0",
     "less": "^3.9.0",
     "less-loader": "^5.0.0",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "moment-timezone": "^0.5.25",
     "prop-types": "^15.7.2",
     "rc-tween-one": "^2.5.0",
