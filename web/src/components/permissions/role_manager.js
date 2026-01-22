@@ -929,31 +929,35 @@ class RolesManager extends Component {
 
     confirmDeleteRole = (record) => {
         let that = this;
-        confirm({
-            title: "危险操作提示",
-            content:
-                "删除该角色组时该角色组和与之绑定的所有用户的关系、所有资源的关系和权限链接的关系也会被删除，请谨慎操作！",
-            okText: "确认删除",
-            okType: "danger",
-            cancelText: "取消",
-            onOk() {
-                deleteRole({
-                    id: record["Id"],
-                })
-                    .then((res) => {
-                        if (res.code === 0) {
-                            message.success("删除成功");
-                            that.refreshTableData();
-                        } else {
-                            message.error(res.msg);
-                        }
+        if (record.Id === 1) {
+          message.error("此默认角色不允许删除!");
+        } else {
+            confirm({
+                title: "危险操作提示",
+                content:
+                    "删除该角色组时该角色组和与之绑定的所有用户的关系、所有资源的关系和权限链接的关系也会被删除，请谨慎操作！",
+                okText: "确认删除",
+                okType: "danger",
+                cancelText: "取消",
+                onOk() {
+                    deleteRole({
+                        id: record["Id"],
                     })
-                    .catch((err) => {
-                        message.error(err.toLocaleString());
-                    });
-            },
-            onCancel() {},
-        });
+                        .then((res) => {
+                            if (res.code === 0) {
+                                message.success("删除成功");
+                                that.refreshTableData();
+                            } else {
+                                message.error(res.msg);
+                            }
+                        })
+                        .catch((err) => {
+                            message.error(err.toLocaleString());
+                        });
+                },
+                onCancel() {},
+            });
+        }
     };
 
     changePage = (page, pageSize) => {

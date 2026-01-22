@@ -3,18 +3,19 @@ package models
 import (
 	"errors"
 	"fmt"
-	"github.com/chujieyang/commonops/ops/opslog"
 	"strings"
 
 	"github.com/chujieyang/commonops/ops/infrastructure/database"
+	"github.com/chujieyang/commonops/ops/opslog"
 	"github.com/chujieyang/commonops/ops/utils"
+	"github.com/chujieyang/commonops/ops/value_objects/permission"
 	"github.com/jinzhu/gorm"
 )
 
 var authSkipMap = map[string]bool{
 	"GET:/user/tokenRefresh": true,
-	"GET:/user/permissions": true,
-	"GET:/user/login": true,
+	"GET:/user/permissions":  true,
+	"GET:/user/login":        true,
 }
 
 /*
@@ -62,8 +63,8 @@ type Permissions struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	UrlPath     string `json:"urlPath"`
-	CanDelete   int  `json:"canDelete"`
-	AuthType       string `json:"authType"`
+	CanDelete   int    `json:"canDelete"`
+	AuthType    string `json:"authType"`
 }
 
 /*
@@ -206,6 +207,7 @@ func AddRoleUsers(roleId int64, userIdList []string) (err error) {
 	return
 }
 
+// GetAllAuthLinks gets all auth links
 func GetAllAuthLinks() (permissions []Permissions, err error) {
 	err = database.Mysql().Raw("SELECT id, name, url_path, can_delete, auth_type FROM permissions").Scan(&permissions).Error
 	return
@@ -217,25 +219,60 @@ func GetAuthLinksByRoleId(roleId int) (permissions []Permissions, err error) {
 	return
 }
 
-func AddAuthLink(name string, description string, path string) (err error) {
+func AddAuthLink(name string, description string, urlPath string, authType string) (err error) {
 	permission := Permissions{
 		Name:        name,
 		Description: description,
-		UrlPath:     path,
-		CanDelete: 0,
+		UrlPath:     urlPath,
+		AuthType:    authType,
+		CanDelete:   0,
 	}
 	count := 0
-	database.Mysql().Where("name = ? or url_path = ?", name, path).Find(&permission).Count(&count)
+	database.Mysql().Where("name = ? or url_path = ?", name, urlPath).Find(&permission).Count(&count)
 	if count == 0 {
 		database.Mysql().Create(&permission)
 		return
-	} else {
-		return errors.New("权限名称或路径已经存在")
 	}
+	return errors.New("权限名称或路径已经存在")
 }
 
+// DeleteAuthLink deletes auth link
 func DeleteAuthLink(id int) (err error) {
 	err = database.Mysql().Delete(&Permissions{}, "id=?", id).Error
+	return
+}
+
+// GetAuthLink gets detail of auth link
+func GetAuthLink(id int) (authLink PermissionDetail, err error) {
+	err = database.Mysql().Raw("select permissions.* from permissions where permissions.id=?", id).Scan(&authLink).Error
+	return
+}
+
+// UpdateAuthLink updates detail of auth link
+func UpdateAuthLink(data permission.AuthLinkInfoForm) (err error) {
+	updateSql := "update permissions set id=id"
+	// 需要更新的项
+	if data.Name != "" {
+		name := fmt.Sprintf("%s", data.Name)
+		updateSql = fmt.Sprintf("%s, name='%s'", updateSql, name)
+	}
+	if data.Description != "" {
+		description := fmt.Sprintf("%s", data.Description)
+		updateSql = fmt.Sprintf("%s, description='%s'", updateSql, description)
+	}
+	if data.AuthType != "" {
+		authType := fmt.Sprintf("%s", data.AuthType)
+		updateSql = fmt.Sprintf("%s, auth_type='%s'", updateSql, authType)
+	}
+	if data.UrlPath != "" {
+		urlPath := fmt.Sprintf("%s", data.UrlPath)
+		updateSql = fmt.Sprintf("%s, url_path='%s'", updateSql, urlPath)
+	}
+	if data.CanDelete >= 0 {
+		updateSql = fmt.Sprintf("%s, can_delete='%d'", updateSql, data.CanDelete)
+	}
+	updateSql = fmt.Sprintf("%s where id in (?)", updateSql)
+	err = database.Mysql().Exec(updateSql, strings.Split(data.Id, ",")).Error
 	return
 }
 

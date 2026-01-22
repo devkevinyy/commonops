@@ -28,6 +28,7 @@ import DomainManageContent from "../components/dns/domain_manage";
 import NacosContent from "../components/nacos/nacos_content";
 import NacosTemplateContent from "../components/nacos/template_content";
 import { getUserPermissionsList } from "../api/permission";
+import CmdsContent from "../components/batch/cmds";
 
 const { Content } = Layout;
 
@@ -151,6 +152,15 @@ class ContentLayout extends Component {
                         )}
                     />
                     <Route
+                        path="/admin/batch/cmds"
+                        render={() => (
+                            <CmdsContent
+                                aclAuthMap={this.state.actionPermissionMap}
+                                isSuperAdmin={this.state.isSuperAdmin}
+                            />
+                        )}
+                    />
+                    <Route
                         path="/admin/dns/domain_manage"
                         render={() => (
                             <DomainManageContent
@@ -233,7 +243,11 @@ class ContentLayout extends Component {
                     />
                     <Route
                         path="/admin/permission/permissions"
-                        component={PermissionsManager}
+                        render={() => (
+                            <PermissionsManager
+                                aclAuthMap={this.state.actionPermissionMap}
+                            />
+                        )}
                     />
                     <Route
                         path="/admin/permission/password"

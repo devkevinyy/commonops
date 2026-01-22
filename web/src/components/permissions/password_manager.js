@@ -4,7 +4,7 @@ import {postUpdatePassword} from "../../api/user";
 
 const { Content } = Layout;
 
-
+// 修改自己密码不应该需要认证aclAuthMap["POST:/user/updatePassword"]
 class PasswordManager extends Component {
 
     constructor(props) {
@@ -14,36 +14,25 @@ class PasswordManager extends Component {
         });
     }
 
-    compareToFirstPassword = (rule, value, callback) => {
-        const form = this.props.form;
-        if (value && value !== form.getFieldValue('password')) {
-            callback('两次密码不一致!');
-        } else {
-            callback();
-        }
-    };
-
-    updatePassword = (e) => {
-        e.preventDefault();
-        this.props.form.validateFields((err, values) => {
-            if (!err) {
-                let reqData = {
-                    "password": values['password'],
-                    "confirm_password": values['confirm_password']
-                };
-                postUpdatePassword(reqData).then((res)=>{
-                    if(res.code === 0){
-                        message.success("密码修改成功!");
-                    }
-                }).catch((err)=>{
-                    console.log(err)
-                });
+    updatePassword = (values) => {
+        let reqData = {
+            "password": values['password'],
+            "confirm_password": values['confirm_password']
+        };
+        postUpdatePassword(reqData)
+        .then((res)=>{
+            if(res.code === 0){
+                message.success("密码修改成功!", 1, () => {window.location.href = "/admin"});
+            } else {
+                message.error(res.msg);
             }
+        })
+        .catch((err)=>{
+            console.log(err.toLocaleString());
         });
     };
 
     render() {
-        const { getFieldDecorator } = this.props.form;
         const formItemLayout = {
             labelCol: { span: 2 },
             wrapperCol: { span: 6 },
@@ -52,32 +41,67 @@ class PasswordManager extends Component {
             <Content style={{
                 background: '#fff', padding: 20, margin: 0, height: "100%",
             }}>
-                <Form onSubmit={this.updatePassword}>
-                    <Form.Item label="新密码" hasFeedback {...formItemLayout}>
-                        {getFieldDecorator('password', {
-                            rules: [
-                                {
-                                    required: true,
-                                    message: '请输入新密码',
-                                }
-                            ],
-                        })(<Input />)}
+                <Form onFinish={this.updatePassword}>
+                    <Form.Item
+                        {...formItemLayout}
+                        label="新密码"
+                        name="password"
+                        hasFeedback
+                        rules={[
+                            {
+                                required: true,
+                                message: "请输入新密码",
+                            },
+                            {
+                                min: 8,
+                                message: "密码不能少于8个字符",
+                            },
+                            {
+                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                                message: "密码必须包含大小写字母和数字",
+                            },
+                        ]}
+                    >
+                        <Input />
                     </Form.Item>
-                    <Form.Item label="确认密码" hasFeedback {...formItemLayout}>
-                        {getFieldDecorator('confirm_password', {
-                            rules: [
-                                {
-                                    required: true,
-                                    message: '请确认新密码',
+                    <Form.Item
+                        {...formItemLayout}
+                        label="确认密码"
+                        name="confirm_password"
+                        hasFeedback
+                        rules={[
+                            {
+                                required: true,
+                                message: "请确认新密码",
+                            },
+                            {
+                                min: 8,
+                                message: "密码不能少于8个字符",
+                            },
+                            {
+                                pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                                message: "密码必须包含大小写字母和数字",
+                            },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    if (value && value !== getFieldValue("password")) {
+                                        return Promise.reject(new Error("两次输入的密码不一致!"));
+                                    }
+                                    return Promise.resolve();
                                 },
-                                {
-                                    validator: this.compareToFirstPassword
-                                }
-                            ],
-                        })(<Input />)}
+                            }),
+                        ]}
+                    >
+                        <Input />
                     </Form.Item>
-                    <Form.Item {...formItemLayout} style={{ textAlign: 'center' }}>
-                        <Button type="primary" htmlType="submit">
+                    <Form.Item
+                        {...formItemLayout}
+                        style={{ textAlign: 'center' }}
+                    >
+                        <Button
+                            type="primary"
+                            htmlType="submit"
+                        >
                             确 认
                         </Button>
                     </Form.Item>
@@ -85,7 +109,6 @@ class PasswordManager extends Component {
             </Content>
         );
     }
-    
 }
 
 export default PasswordManager;

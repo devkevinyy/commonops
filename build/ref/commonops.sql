@@ -507,7 +507,15 @@ VALUES
 	(173,'删除CI 构建','删除CI 构建','DELETE:/ci/build',0,'操作'),
 	(174,'CI创建凭证','CI创建凭证','POST:/ci/credential',0,'操作'),
 	(175,'新建CD流程模板','新建CD流程模板','POST:/cd/processTemplate',0,'操作'),
-	(176,'获取CD流程日志','获取CD流程日志','GET:/cd/processLog',0,'操作');
+	(176,'获取CD流程日志','获取CD流程日志','GET:/cd/processLog',0,'操作'),
+    (177,'更新用户权限','更新用户权限','PUT:/user/active',0,'操作'),
+    (178,'获取权限链接-新','获取权限链接-新','GET:/permissions/authLink',0,'操作'),
+    (179,'添加权限链接-新','添加权限链接-新','POST:/permissions/authLink',0,'操作'),
+    (180,'更新权限链接-新','更新权限链接-新','PUT:/permissions/authLink',0,'操作'),
+    (181,'删除权限链接-新','删除权限链接-新','DELETE:/permissions/authLink',0,'操作'),
+    (182,'Ansible菜单栏','Ansible菜单栏','/admin/batch/ansible',0,'菜单'),
+    (183,'获取节点树','获取节点树','GET:/batch/allNodeTree',0,'操作'),
+    (184,'批量命令菜单栏','批量命令菜单栏','/admin/batch/cmds',0,'菜单');
 
 UNLOCK TABLES;
 
@@ -743,7 +751,15 @@ VALUES
 	(350,1,173),
 	(351,1,174),
 	(352,1,175),
-	(353,1,176);
+	(353,1,176),
+    (354,1,177),
+    (355,1,178),
+    (356,1,179),
+    (357,1,180),
+    (358,1,181),
+    (359,1,182),
+    (360,1,183),
+    (361,1,184);
 
 UNLOCK TABLES;
 

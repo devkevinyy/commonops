@@ -24,3 +24,8 @@ type OtherDetail struct {
 	OtherRes
 	// 扩展信息
 }
+
+type PermissionDetail struct {
+	Permissions
+	// 扩展信息
+}

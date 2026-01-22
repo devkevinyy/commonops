@@ -12,12 +12,19 @@ import (
  * @Desc:
  */
 
-type cloudAccount struct {}
+type cloudAccount struct{}
 
 var cloudAccountInstance = &cloudAccount{}
 
 func GetCloudAccountService() *cloudAccount {
 	return cloudAccountInstance
+}
+
+// GetAllCloudAccounts get all cloud accounts.
+func (c *cloudAccount) GetAllCloudAccounts() (data []models.CloudAccount) {
+	total := models.GetCloudAccountsCount()
+	data = models.GetCloudAccounts(0, total)
+	return
 }
 
 func (c *cloudAccount) GetCloudAccountDataByPage(page, size uint) (total uint, data []models.CloudAccount) {

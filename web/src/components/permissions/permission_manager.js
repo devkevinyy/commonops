@@ -11,15 +11,21 @@ import {
     Input,
     message,
     Tag,
+    Select,
+    Divider,
 } from "antd";
 import {
-    deleteAuthLink,
     getPermissionsList,
+    getAuthLink,
+    putAuthLink,
     postAddAuthLink,
-} from "../../api/role";
+    deleteAuthLink,
+} from "../../api/permission"
 import OpsBreadcrumbPath from "../breadcrumb_path";
+import ExtraInfoModal from "./common/extra_info_modal";
 
 const { Content } = Layout;
+const { Option } = Select;
 
 let columnStyle = {
     overFlow: "hidden",
@@ -74,7 +80,7 @@ class AuthLinkModal extends Component {
                         <Form.Item
                             {...formItemLayout}
                             label="权限链接"
-                            name="path"
+                            name="urlPath"
                             rules={[
                                 {
                                     required: true,
@@ -83,6 +89,24 @@ class AuthLinkModal extends Component {
                             ]}
                         >
                             <Input placeholder="请输入权限链接" />
+                        </Form.Item>
+                        <Form.Item
+                            {...formItemLayout}
+                            label="权限类型"
+                            name="authType"
+                            rules={[
+                                {
+                                    required: true,
+                                    message: "请输入权限类型",
+                                },
+                            ]}
+                        >
+                            <Select
+                                placeholder="选择权限类型"
+                            >
+                              <Option value="菜单">菜单</Option>
+                              <Option value="操作">操作</Option>
+                            </Select>
                         </Form.Item>
                     </Form>
                 </Modal>
@@ -138,20 +162,30 @@ class PermissionsManager extends Component {
                     dataIndex: "urlPath",
                     key: "urlPath",
                     className: { columnStyle },
-                    width: 360,
+                    width: 300,
                 },
                 {},
                 {
                     title: "操作",
                     key: "operation",
                     fixed: "right",
-                    width: 60,
+                    width: 160,
                     align: "center",
                     render: (text, record) => {
                         return (
                             <div>
+                                <Button
+                                    type="info"
+                                    size="small"
+                                    disabled={
+                                        !this.props.aclAuthMap["PUT:/permissions/authLink"]
+                                    }
+                                    onClick={this.authLinkEdit.bind(this, record)}
+                                >
+                                    编辑
+                                </Button>
+                                <Divider type="vertical" />
                                 <Popconfirm
-                                    disabled={record['canDelete']===0}
                                     title="确定删除该项内容吗?"
                                     onConfirm={this.confirmDeleteAuthLink.bind(
                                         this,
@@ -159,8 +193,15 @@ class PermissionsManager extends Component {
                                     )}
                                     okText="确认"
                                     cancelText="取消"
+                                    disabled={
+                                        !this.props.aclAuthMap["DELETE:/permissions/authLink"]
+                                    }
                                 >
-                                    <Button type="danger" size="small" disabled={record['canDelete']===0}>
+                                    <Button
+                                        type="danger"
+                                        size="small"
+                                        disabled={record['canDelete']===0}
+                                    >
                                         删除
                                     </Button>
                                 </Popconfirm>
@@ -185,6 +226,10 @@ class PermissionsManager extends Component {
                 total: 0,
                 onChange: (page, pageSize) => this.changePage(page, pageSize),
             },
+            extraInfoData: {},
+            updateMode: "single",
+            idsList: [],
+            selectedRowKeys: [],
         };
     }
 
@@ -297,6 +342,69 @@ class PermissionsManager extends Component {
         });
     }
 
+    authLinkEdit = (data) => {
+        getAuthLink(data.Id)
+            .then((res) => {
+                if (res["code"] !== 0) {
+                    message.error(res["msg"]);
+                } else {
+                    let extraInfoData = {
+                      Id: res.data["Id"],
+                      name: res.data["name"],
+                      description: res.data["description"],
+                      urlPath: res.data["urlPath"],
+                      canDelete: res.data["canDelete"],
+                      authType: res.data["authType"],
+                    };
+                    this.setState({
+                      extraInfoModalVisible: true,
+                      authLinkId: data.Id,
+                      updateMode: "single",
+                      extraInfoData: extraInfoData,
+                    });
+                }
+            })
+            .catch((err) => {
+                message.error(err.toLocaleString());
+            });
+    }
+
+    handleExtraInfoOk = (data) => {
+        let targetId = "";
+        // makge sure it is an int
+        data["canDelete"] = parseInt(data["canDelete"]);
+        // convert id to string
+        data["Id"] = data["Id"].toString();
+        if (this.state.updateMode === "single") {
+            targetId = String(this.state.authLinkId);
+        } else {
+            targetId = this.state.idsList.join(",");
+        }
+        putAuthLink({
+            ...data,
+            id: targetId,
+        })
+            .then((res) => {
+                if (res.code === 0) {
+                    this.setState({
+                        extraInfoModalVisible: false,
+                        selectedRowKeys: [],
+                    });
+                    message.success("修改成功");
+                  this.refreshTableData();
+                } else {
+                    message.error(res.msg);
+                }
+            })
+            .catch((err) => {
+                message.error(err.toLocaleString())
+            });
+    }
+
+    handleExtraInfoCancel = (data) => {
+        this.setState({ extraInfoModalVisible: false });
+    }
+
     render() {
         return (
             <Content
@@ -310,18 +418,21 @@ class PermissionsManager extends Component {
                 <OpsBreadcrumbPath
                     pathData={["权限管理", "链接权限", "权限链接列表"]}
                 />
-                {/*<div style={{ padding: "0px 0px 10px 0px" }}>*/}
-                {/*    <Row>*/}
-                {/*        <Col>*/}
-                {/*            <Button*/}
-                {/*                type="primary"*/}
-                {/*                onClick={this.createAuthLink}*/}
-                {/*            >*/}
-                {/*                新建权限链接*/}
-                {/*            </Button>*/}
-                {/*        </Col>*/}
-                {/*    </Row>*/}
-                {/*</div>*/}
+                <div style={{ padding: "0px 0px 10px 0px" }}>
+                    <Row>
+                        <Col>
+                            <Button
+                                type="primary"
+                                onClick={this.createAuthLink}
+                                disabled={
+                                    !this.props.aclAuthMap["POST:/permissions/authLink"]
+                                }
+                            >
+                                新建权限链接
+                            </Button>
+                        </Col>
+                    </Row>
+                </div>
                 <AuthLinkModal
                     formRef={this.formRef}
                     authLinkModalVisible={this.state.authLinkModalVisible}
@@ -335,6 +446,17 @@ class PermissionsManager extends Component {
                     pagination={this.state.pagination}
                     loading={this.state.tableLoading}
                     size="small"
+                />
+
+                {/*完善信息组件*/}
+                <ExtraInfoModal
+                    editData={this.state.extraInfoData}
+                    resType="authLink"
+                    updateMode={this.state.updateMode}
+                    resFrom={this.state.resFrom}
+                    visible={this.state.extraInfoModalVisible}
+                    handleOk={this.handleExtraInfoOk}
+                    handleCancel={this.handleExtraInfoCancel}
                 />
             </Content>
         );

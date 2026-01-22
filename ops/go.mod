@@ -15,6 +15,7 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/pkg/errors v0.9.1
 	github.com/robfig/cron v1.2.0
+	github.com/timest/go-pprint v0.0.0-20180726015813-dc654bd2818f // indirect
 	go.uber.org/zap v1.16.0
 	golang.org/x/crypto v0.0.0-20201002170205-7f63de1d35b0
 	gopkg.in/ini.v1 v1.62.0

@@ -12,6 +12,7 @@ import {
     Divider,
     Modal,
     Input,
+    Popconfirm,
 } from "antd";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { getUsersList, postUserCreate, putUserCreate } from "../../api/user";
@@ -70,7 +71,12 @@ class UserModal extends Component {
                         {...formItemLayout}
                         name="password"
                         rules={[
-                            { required: true, message: "用户名不能为空！" },
+                            { required: true, message: "密码不能为空！" },
+                            { min: 8, message: "密码不能少于8个字符",},
+                            {
+                              pattern: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                              message: "密码必须包含大小写字母和数字",
+                            }
                         ]}
                     >
                         <Input />
@@ -181,18 +187,25 @@ class UserManager extends Component {
                                     启用
                                 </Button>
                                 <Divider type="vertical" />
-                                <Button
-                                    type="danger"
-                                    size="small"
-                                    disabled={disabled}
-                                    onClick={this.updateUserActiveStatus.bind(
+                                <Popconfirm
+                                    title="确认禁用该用户吗?"
+                                    onConfirm={this.updateUserActiveStatus.bind(
                                         this,
                                         record.email,
                                         false,
+                                        record.ID,
                                     )}
+                                    okText="确认"
+                                    cancelText="取消"
                                 >
-                                    禁用
-                                </Button>
+                                    <Button
+                                        type="danger"
+                                        size="small"
+                                        disabled={disabled}
+                                    >
+                                        禁用
+                                    </Button>
+                                </Popconfirm>
                             </div>
                         );
                     },
@@ -314,22 +327,26 @@ class UserManager extends Component {
         this.setState({ userModalVisible: false });
     }
 
-    updateUserActiveStatus(email, activeStatus) {
-        putUserCreate({
-            email: email,
-            active: activeStatus,
-        })
-            .then((res) => {
-                if (res.code === 0) {
-                    message.success("操作成功！");
-                    this.refreshTableData();
-                } else {
-                    message.error(res.msg);
-                }
+    updateUserActiveStatus(email, activeStatus, ID) {
+        if (ID === 1) {
+          message.error("此默认用户不允许禁用!")
+        } else {
+            putUserCreate({
+                email: email,
+                active: activeStatus,
             })
-            .catch((err) => {
-                message.error(err.toLocaleString());
-            });
+                .then((res) => {
+                    if (res.code === 0) {
+                        message.success("操作成功！");
+                        this.refreshTableData();
+                    } else {
+                        message.error(res.msg);
+                    }
+                })
+                .catch((err) => {
+                    message.error(err.toLocaleString());
+                });
+        }
     }
 
     render() {

@@ -344,3 +344,9 @@ func GetEcsTreeData() (ecs []Ecs, err error) {
 	err = database.Mysql().Raw("SELECT id, instance_name, description, public_ip_address, inner_ip_address, tags from ecs where data_status = 2").Scan(&ecs).Error
 	return
 }
+
+// GetEcsByAccount xxx
+func GetEcsByAccount(id uint) (ecs []Ecs, err error) {
+	err = database.Mysql().Raw("SELECT id, instance_name, public_ip_address FROM ecs WHERE cloud_account_id = ?", id).Scan(&ecs).Error
+	return
+}

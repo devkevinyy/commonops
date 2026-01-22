@@ -1,5 +1,14 @@
 .idea/
 *.log
+*.bak
+
+logs/
+
+# ops/
 ops/conf/config.ini
-vendor
+ops/ops
+ops/vendor/
+
+# web/
 web/node_modules
+web/build/
